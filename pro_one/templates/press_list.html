@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        td {
+            width: 300px;
+        }
+        thead {
+            background-color: #5bc0de;
+        }
+        .d1 {
+            width: 1200px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="d1">
+<h1>出版社列表</h1>
+<a href="/add_press/">
+    <button>添加</button>
+</a>
+
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>numerical order</th>
+        <th>id</th>
+        <th>name</th>
+        <th>operation</th>
+    </tr>
+    </thead>
+    {% for i in result %}
+        <tr>
+{#            列出数据库中内容#}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.id }}</td>
+            <td>{{ i.name }}</td>
+            <td>
+                <a href="/del_press/?id={{ i.id }}"><button>del</button></a>
+                <a href="/edit_press/?id={{ i.id }}"><button>edit</button></a>
+            </td>
+        </tr>
+    {% endfor %}
+    <tbody>
+
+    </tbody>
+</table>
+</div>
+
+</body>
+</html>
