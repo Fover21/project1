@@ -1,0 +1,34 @@
+Django总结
+
+Django版1.11
+
+目录：
+	- 1）流程
+	- 2）基本配置
+	- 3）路由系统
+	- 4）视图view
+	- 5）模板
+	- 6）Model
+	- 7）中间件
+	- 8）Form
+	- 9）认证系统
+	- 10）CSRF
+	- 11）分页
+	- 12）Cookie
+	- 13）Seesion
+	- 14）缓存
+	- 15）序列化
+	- 16）信号
+	- 17)admin
+
+
+一、Django流程介绍 
+	
+	浏览器 
+		-> wsgiref模块（python内置收发socket消息的） 
+		-> 中间件 
+		-> urls.py(设置URL和将要执行的函数的对应关系) 
+		-> view.py(业务逻辑处理函数) -> Tempaltes/Models.py-(ORM操作)(DB)
+		-> 将处理完的页面先发给
+		-> wsgiref模块封装
+		-> 封装完成后将返回的HTML页面在浏览器展示

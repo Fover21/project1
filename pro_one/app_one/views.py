@@ -4,10 +4,13 @@ from app_one import models
 # Create your views here.
 
 
+# 上传功能
 def index(request):
     # 如果点击提交按钮实现上传功能
     if request.method == 'POST':
-        for item in request.FILES:
+        # print(request.FILES)  # 拿到的的是传来的文件列表对象
+        for item in request.FILES:  # 上传多个文件
+            # print(item)  # 每个文件对象的name值
             file_obj = request.FILES.get(item)
             f = open('upload/%s' % file_obj.name, 'wb')
             item_file = file_obj.chunks()
@@ -15,7 +18,6 @@ def index(request):
                 f.write(line)
             f.close()
         return HttpResponse('OK')
-
     return render(request, 'index.html')
 
 
