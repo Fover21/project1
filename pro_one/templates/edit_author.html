@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>编辑页面</h1>
+
+
+<div>
+
+    <form action="" method="post">
+
+        <input type="text" name="author_name" value="{{ data.name }}">
+
+        <select name="book_name" id="" multiple>
+
+        {% for book in book_lst %}
+            {% if book in data.books.all %}
+                <option value="{{ book.id }}" selected>
+                    {{ book.title }}
+                </option>
+            {% else %}
+                <option value="{{ book.id }}">
+                    {{ book.title }}
+                </option>
+            {% endif %}
+        {% endfor %}
+
+
+        </select>
+
+        <input type="submit">
+
+    </form>
+
+
+</div>
+
+</body>
+</html>

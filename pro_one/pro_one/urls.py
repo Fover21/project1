@@ -19,6 +19,8 @@ from app_one import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    # 文件上传
+    url(r'^index/', views.index),
 
 
     # 出版社
@@ -34,5 +36,12 @@ urlpatterns = [
     url(r'^add_book/', views.add_book),  # 添加书籍信息
     url(r'^del_book/', views.del_book),  # 删除书籍信息
     url(r'^edit_book/', views.edit_book),  # 编辑书籍信息
+
+
+    # 作者
+    url(r'^author_list/', views.author_list),  # 展示作者信息
+    url(r'^add_author/', views.add_author),  # 添加作者信息
+    url(r'^del_author/', views.del_author),  # 删除作者信息
+    url(r'^edit_author/', views.edit_author),  # 编辑作者信息
 
 ]

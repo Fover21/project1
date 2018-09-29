@@ -5,6 +5,17 @@ from app_one import models
 
 
 def index(request):
+    # 如果点击提交按钮实现上传功能
+    if request.method == 'POST':
+        for item in request.FILES:
+            file_obj = request.FILES.get(item)
+            f = open('upload/%s' % file_obj.name, 'wb')
+            item_file = file_obj.chunks()
+            for line in item_file:
+                f.write(line)
+            f.close()
+        return HttpResponse('OK')
+
     return render(request, 'index.html')
 
 
@@ -120,3 +131,69 @@ def edit_book(request):
         return redirect('/book_list/')
     data_list = models.Press.objects.all()  # 获取出版社的所有
     return render(request, 'edit_book.html', {'data': data, "data_list": data_list})
+
+
+# 展示作者
+def author_list(req):
+    # 将作者表中的作者拿出来
+    obj = models.Author.objects
+    data = obj.all()
+    # 作者对应的书籍，是在第三张表中
+    # 将数据渲染到页面
+    return render(req, 'author_list.html', {'data': data})
+
+
+# 添加作者
+def add_author(req):
+    # 点击提交按钮的时候将数据存到数据库
+    if req.method == "POST":
+        # 先获取作者信息
+        author_name = req.POST.get('author_name')
+        # 先将作者信息存入数据库
+        obj = models.Author.objects.create(name=author_name)
+        # 将选择的书的信息拿到存入数据库,同一行数据所以在原来基础上操作add
+        book_names = req.POST.getlist('book_name')  # 这里应该拿一组值
+        obj.books.add(*book_names)
+        # 返回展示页面
+        return redirect('/author_list/')
+    # 点击添加按钮的时候展示书籍内容
+    data = models.Book.objects.all()
+    # 将数据展示到页面
+    return render(req, 'add_author.html', {'data': data})
+
+
+# 删除作者
+def del_author(req):
+    # 获取具体要删除的拿一行
+    del_id = req.GET.get('id')
+    # 将数据库中此行数据删除
+    models.Author.objects.filter(id=del_id).delete()
+    # 删除后将页面返回
+    return redirect('/author_list/')
+
+
+# 编辑作者
+def edit_author(req):
+    # 第一次点击删除按钮的时候应该将次用户数据返回
+    edit_id = req.GET.get('id')
+    # 第二次将数据提交来后将数据存入数据库
+    if req.method == "POST":
+        # 先拿到作者姓名和书籍
+        author_name = req.POST.get('author_name')
+        book_lst = req.POST.getlist('book_name')
+        # 存作者
+        obj = models.Author.objects.filter(id=edit_id)[0]
+        obj.name = author_name
+        obj.save()
+        # 存选的书籍
+        # obj.books.add(*book_lst)
+        obj.books.set(book_lst)
+        # 数据改完后返回页面
+        return redirect('/author_list/')
+    # 在数据库中拿出此行数据并返回
+    # 作者信息
+    author_name = models.Author.objects.filter(id=edit_id)[0]
+    # 书籍信息
+    book_lst = models.Book.objects.all()
+    # 将数据返回
+    return render(req, 'edit_author.html', {'data': author_name, "book_lst": book_lst})

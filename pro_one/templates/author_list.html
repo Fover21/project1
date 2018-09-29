@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+    <style>
+        td {
+            width: 300px;
+            text-align: center;
+        }
+        thead {
+            background-color: #5bc0de;
+        }
+        .d1 {
+            width: 1200px;
+            margin: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1> 展示作者信息 </h1>
+
+<div class="d1">
+    <div><a href="/add_author/"><button>添加</button></a></div>
+    <table border="1">
+
+
+        <thead>
+
+            <tr>
+                <th>Nuber</th>
+                <th>id</th>
+                <th>name</th>
+                <th>booklist</th>
+                <th>handle</th>
+            </tr>
+
+        </thead>
+        <tbody>
+
+            {% for foo in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ foo.id }}</td>
+                    <td>{{ foo.name }}</td>
+                    <td>
+                        {% for book in foo.books.all %}
+                            {% if forloop.last %}
+                                《{{ book.title }}》
+                            {% else %}
+                            《{{ book.title }}》,
+                            {% endif %}
+                            {% empty %}
+                            空空如也
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="/del_author/?id={{ foo.id }}"><button>删除</button></a>
+                        <a href="/edit_author/?id={{ foo.id }}"><button>编辑</button></a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+
+        </tbody>
+
+
+    </table>
+
+
+</div>
+
+
+
+
+
+</body>
+</html>

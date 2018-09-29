@@ -1,0 +1,165 @@
+- 创建app应用与ORM操作
+
+	- Django项目project
+		- app（应用） -> 不同的功能放在不同的app中
+			- 命令 ：
+				- 创建app  
+					python manage.py startapp app(应用名)	
+				- 告诉Django创建了app
+					在settings中的 INSTALLED_APPS 添加新创建的app（app名.apps.apps中的类）
+						# 我这个项目有哪些app
+						INSTALLED_APPS = [
+						    'django.contrib.admin',
+						    'django.contrib.auth',
+						    'django.contrib.contenttypes',
+						    'django.contrib.sessions',
+						    'django.contrib.messages',
+						    'django.contrib.staticfiles', 
+						    'app.apps.AppConfig',  # 告诉Django我创建了一个app  # 以上都是系统自带的
+						]
+	- Django中ORM使用
+		- 用处：
+			- 操作数据表
+			- 操作数据行
+		- 使用
+			- 手动创建数据库（数据库需要自己创建）
+			- 告诉Django连那个数据库
+				- settings中配置DATABASES
+				DATABASES = {
+				    'default': {
+				        'ENGINE': 'django.db.backends.mysql',  # 链接数据库的类型
+				        'NAME': 'db',  # 链接数据库的名字
+				        'HOST': '127.0.0.1',  # 数据库主机地址
+				        'PORT': 3306,  # 数据库端口
+				        'USER': 'root',  # 数据库用户名
+				        'PASSWORD': '123456',  # 数据库密码
+				    }
+				}
+
+			- 用什么链接数据库？
+				- 利用第三方包 pymysql 和 MySQLdb(py2中)
+				- 告诉Django用pymysql模块代替默认的MySQLdb链接MySQL数据库
+					和settings.py同级的__init__.py文件，写上
+					import pymysql
+					pymysql.install_as_MySQLdb()
+
+			- 在app/models.py的文件中创建类
+				类必须继承models.Model
+
+					from django.db import models
+					# Create your models here.
+					# 类名就是表名，属性就是字段，一个对象就是一行数据
+					class User(models.Model):
+					    id = models.AutoField(primary_key=True)  # 创建一个自增的id列作为主键
+					    email = models.CharField(max_length=32)  # varchar(32)
+					    pwd = models.CharField(max_length=32)  # varchar(32)
+
+			- 两个命令
+				- 类在models中建好之后执行以下操作
+				- python manage.py makemigrations
+				  -> 相当于拿个小本本把models.py的变更记录下来（存放在app目录下的migrations目录中）
+				- python manage.py migrate 
+				  -> 把上面的变更记录翻译成sql语句，去数据库执行
+
+			- ORM查询
+				User.object.filter(email='', pwd='')
+
+
+
+- 网站输入url提交表单流程：
+	- 刚开始是get请求，服务器给响应返回一个页面
+	- 输入数据提交表单，这个时候就会提交到form表单对应的action所指的url
+	- 这个时候Django收到后就在urls.py文件中urlpatterns列表中找匹配的url
+	- 找到后去匹配的url后找对应的视图函数
+	- 在视图函数中写业务逻辑（必须有一个request参数，它存放的是表单的数据）
+		- 可以通过request.method方法来进行条件判断
+		- return redirect('/homework/')  # 返回的是url
+		- return render(request, 'loginhtml', {'error_msg': error_msg}) 
+			 # 返回的是html文件  最后的参数是html文件中的变量 俗称：模板语言  键是html文件中的变量（俗称模板语言）
+		- return HttpResponse("成功")  #直接给页面返回信息
+
+
+
+
+- 创建项目到创建应用流程
+	- 创建项目
+		- Django-admin startproject first_Django（项目名）
+	- 创建app  
+		- python manage.py startapp app(应用名)	
+			- 告诉Django创建了app
+				在settings中的 INSTALLED_APPS 添加新创建的app（app名.apps.apps中的类）
+					# 我这个项目有哪些app
+					INSTALLED_APPS = [
+					    'django.contrib.admin',
+					    'django.contrib.auth',
+					    'django.contrib.contenttypes',
+					    'django.contrib.sessions',
+					    'django.contrib.messages',
+					    'django.contrib.staticfiles', 
+					    'app.apps.AppConfig',  # 告诉Django我创建了一个app  # 以上都是系统自带的
+					]
+
+	- Django中ORM使用
+		- 用处：
+			- 操作数据表
+			- 操作数据行
+		- 使用
+			- 手动创建数据库
+			- 告诉Django连那个数据库
+				- settings中配置DATABASES
+				DATABASES = {
+				    'default': {
+				        'ENGINE': 'django.db.backends.mysql',  # 链接数据库的类型
+				        'NAME': 'db',  # 链接数据库的名字
+				        'HOST': '127.0.0.1',  # 数据库主机地址
+				        'PORT': 3306,  # 数据库端口
+				        'USER': 'root',  # 数据库用户名
+				        'PASSWORD': '123456',  # 数据库密码
+				    }
+				}
+
+			- 用什么链接数据库？
+				- 利用第三方包 pymysql 和 MySQLdb(py2中)
+				- 告诉Django用pymysql模块代替默认的MySQLdb链接MySQL数据库
+					和settings.py同级的__init__.py文件，写上
+					import pymysql
+					pymysql.install_as_MySQLdb()
+
+			- 在app/models.py的文件中创建类
+				类必须继承models.Model
+
+			- 两个命令
+				- python manage.py makemigrations -> 相当于拿个小本本把models.py的变更记录下来
+				- python manage.py migrate -> 把上面的变更记录翻译成sql语句，去数据库执行
+
+			- ORM查询
+				User.object.filter(email='', pwd='')
+				
+	- 启动项目
+		- 命令行启动(切换到项目的根目录)
+			- python manage.py runserver 127.0.0.1:8090(改端口这样指定)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

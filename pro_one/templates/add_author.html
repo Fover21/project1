@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<div>
+
+
+    <form action="" method="post">
+
+        作者：<input type="text" name="author_name">
+
+
+        <select name="book_name" id="" multiple>
+
+            {% for book in data %}
+                <option value="{{ book.id }}">
+                {{ book.title }}
+                </option>
+            {% endfor %}
+
+
+        </select>
+
+        <input type="submit">
+
+
+    </form>
+
+</div>
+
+</body>
+</html>
