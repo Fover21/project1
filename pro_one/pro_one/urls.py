@@ -21,10 +21,18 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
 
-
+    # 出版社
     url(r'^$', views.index),  # 主页信息
     url(r'^press_list/', views.press_list),  # 展示出版社信息
-    url(r'^add_press', views.add_press),  # 添加出版社信息
-    url(r'^del_press', views.del_press),  # 删除出版社信息
-    url(r'^edit_press', views.edit_press),  # 编辑出版社信息
+    url(r'^add_press/', views.add_press),  # 添加出版社信息
+    url(r'^del_press/', views.del_press),  # 删除出版社信息
+    url(r'^edit_press/', views.edit_press),  # 编辑出版社信息
+
+
+    # 书
+    url(r'^book_list/', views.book_list),  # 展示书籍信息
+    url(r'^add_book/', views.add_book),  # 添加书籍信息
+    url(r'^del_book/', views.del_book),  # 删除书籍信息
+    url(r'^edit_book/', views.edit_book),  # 编辑书籍信息
+
 ]

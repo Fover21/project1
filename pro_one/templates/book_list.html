@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+
+<div>
+
+    <a href="/add_book/"><button>添加</button></a>
+
+</div>
+
+    <table border="1">
+
+        <thead>
+
+        <tr>
+            <th>序号</th>
+            <th>id</th>
+            <th>title</th>
+            <th>press</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+        {% for book in data %}
+            <tr>
+
+                <td>{{ forloop.counter }}</td>
+                <td>{{ book.id }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.press.name }}</td>
+            <td>
+                <a href="/del_book/?id={{ book.id }}"><button>del</button></a>
+                <a href="/edit_book/?id={{ book.id }}"><button>edit</button></a>
+            </td>
+
+            </tr>
+        {% endfor %}
+
+
+        </tbody>
+
+
+    </table>
+
+</div>
+
+
+</body>
+</html>
