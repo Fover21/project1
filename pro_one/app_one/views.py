@@ -1,7 +1,27 @@
 from django.shortcuts import render, HttpResponse, redirect
 from app_one import models
 
+
 # Create your views here.
+# 测试
+def ml_test(req):
+    class T(object):
+        def __init__(self, name, age):
+            self.name = name
+            self.age = age
+
+    obj1 = T('jack', 10)
+    obj2 = T('tom', 20)
+    obj_list = [obj1, obj2]
+    import time
+    data = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    import datetime
+    now = datetime.datetime.now()
+    return render(req, 'ml_test.html', {
+                      "obj_list": obj_list,
+                      'time': data,
+                      'datetime': now,
+                  })
 
 
 # 上传功能

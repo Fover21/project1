@@ -19,6 +19,12 @@ from app_one import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+
+    # 测试
+    url(r'^test_ml/', views.ml_test),
+
+
+
     # 文件上传
     url(r'^index/', views.index),
 
