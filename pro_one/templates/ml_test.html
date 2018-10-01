@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>
-{{ obj_list.0.name }}
+    {{ obj_list.0.name }}
 </h1>
 <p>
     {{ obj_list.1.age }}
@@ -16,6 +16,6 @@
 <p>{{ datetime|date:'Y-m-d H:i:s' }}</p>
 
 {% load tag_tests %}
-           <p>{{ time|add_str }}</p>
+<p>{{ time|add_str }}</p>
 </body>
 </html>

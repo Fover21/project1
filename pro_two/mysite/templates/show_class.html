@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <style>
+        th, tr{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+<h1 style="text-align: center">教室查询</h1>
+<div><a href="/add_class/"><button class="btn btn-primary">添加</button></a></div>
+    <table class="table table-bordered" >
+        <thead>
+            <tr>
+                <td>number</td>
+                <td>id</td>
+                <td>name</td>
+                <td>time</td>
+                <td>handle</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class in class_data %}
+                <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <th>{{ class.id }}</th>
+                    <th>{{ class.name }}</th>
+                    <th>{{ class.first_day|date:"Y-m-d" }}</th>
+                    <th>
+                        <a href="/del_class/?id={{ class.id }}"><button class="btn btn-danger">删除</button></a>
+                        <a href="/edit_class/?id={{ class.id }}"><button class="btn btn-info">编辑</button></a>
+                    </th>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

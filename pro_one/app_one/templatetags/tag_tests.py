@@ -13,4 +13,4 @@ def add_str(value):
     :param value: |左边被修饰的那个变量
     :return: 修饰后的变量内容
     '''
-    return value + 'love'
+    return value + ' love'

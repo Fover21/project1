@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<div class="container">
+    <h1 style="text-align: center">添加老师页面</h1>
+    <form action="" method="post">
+
+    老师姓名： <input type="text" name="teacher_name">
+    教室： <select name="class_name" id="" multiple>
+            {% for class in class_list %}
+                <option value="{{ class.id }}">
+                    {{ class.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <input type="submit">
+    </form>
+</div>
+</body>
+</html>

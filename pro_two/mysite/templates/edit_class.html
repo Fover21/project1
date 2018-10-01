@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/jquery-3.3.1.js"></script>
+</head>
+<body>
+<h1>编辑教室</h1>
+
+<div>
+
+    <form action="" method="post">
+        教室名字： <input type="text" name="class_name" value="{{ class_obj.name }}">
+        开班日期： <input type="date" name="class_time" id="da" value="{{ class_obj.first_day|date:"Y-m-d" }}">
+        <input type="submit">
+    </form>
+
+</div>
+</body>
+</html>
