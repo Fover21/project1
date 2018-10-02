@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from app import models
 
+
 # Create your views here.
 
 
@@ -9,13 +10,17 @@ def index(req):
     return render(req, 'index.html')
 
 
-# 教室
-# 展示教室
+# 班级
+# 展示班级
 def show_class(req):
     # 展示教室表信息
     # 先拿出教室表中信息
     class_data = models.Class.objects.all()
-    return render(req, 'show_class.html', {"class_data": class_data})
+    # 班级所对的老师
+    return render(req, 'show_class.html',
+                  {
+                      "class_data": class_data,
+                  })
 
 
 # 增加教室
@@ -42,7 +47,7 @@ def del_class(req):
     return redirect('/show_class/')
 
 
-# 编辑教室
+# 编辑班级
 def edit_class(req):
     # 第一次点击编辑按钮的时候出现编辑页面
     # 将原先数据库中的值查出来展现到页面
@@ -61,6 +66,25 @@ def edit_class(req):
     class_obj = models.Class.objects.filter(id=edit_id)[0]
     # 展示页面
     return render(req, 'edit_class.html', {"class_obj": class_obj})
+
+
+# 查询班级总学生
+def class_in_student(req):
+    # 点击按钮先拿到该行班级名字
+    class_name = req.GET.get('id')
+    # 查询出该班级中所有学生
+    student_list = models.Class.objects.filter(name=class_name).values("student__name")
+    return render(req, 'class_in_student.html', {"class_name": class_name, "student_list": student_list})
+
+
+# 查询班级老师
+def class_in_teacher(req):
+    # 点击按钮先拿到该行班级名字
+    class_name = req.GET.get('id')
+    # 查询出该班级中所有老师
+    teacher_list = models.Class.objects.filter(name=class_name).values("teacher__name")
+    print(teacher_list)
+    return render(req, 'class_in_teacher.html', {"class_name": class_name, "teacher_list": teacher_list})
 
 
 # 学生

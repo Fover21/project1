@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^add_class/', views.add_class),  # 添加教室
     url(r'^del_class/', views.del_class),  # 删除教室
     url(r'^edit_class/', views.edit_class),  # 编辑教室
+    url(r'^class_in_student/', views.class_in_student),  # 查询班级学生
+    url(r'^class_in_teacher/', views.class_in_teacher),  # 查询班级老师
 
     # 学生
     url(r'^show_student/', views.show_student),  # 展示学

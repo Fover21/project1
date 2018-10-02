@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+
+{{ class_name }}:
+    <br>学生姓名：
+    <br>
+    {% for student in student_list.all %}
+        {% if forloop.last %}
+        {{ student.student__name }}
+       {% else %}
+        {{ student.student__name }},
+         {% endif %}
+    {% endfor %}
+
+</div>
+
+
+</body>
+</html>
