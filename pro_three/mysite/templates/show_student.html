@@ -1,0 +1,40 @@
+
+{% extends 'index.html' %}
+{% block active3 %}
+     active
+{% endblock %}
+{% block titlename %}
+    学生信息
+{% endblock %}
+
+{% block message %}
+ <div><a href="/add_student/"><button class="btn btn-primary">添加</button></a></div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>number</th>
+                <th>id</th>
+                <th>name</th>
+                <th>class</th>
+{#                <th>teacher</th>#}
+                <th>handle</th>
+            </tr>
+        </thead>
+            {% for foo in student_data %}
+                <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <th>{{ foo.id }}</th>
+                    <th>{{ foo.name }}</th>
+                    <th>{{ foo.class_in.name }}</th>
+                    <th>
+                        <a href="/del_student/?id={{ foo.id }}"><button class="btn btn-danger">删除</button></a>
+                        <a href="/edit_student/?id={{ foo.id }}"><button class="btn btn-info">编辑</button></a>
+                    </th>
+
+                </tr>
+            {% endfor %}
+
+    </table>
+{% endblock %}
+

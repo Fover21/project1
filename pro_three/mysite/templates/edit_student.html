@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>编辑页面</h1>
+
+<div>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        学生姓名： <input type="text" name="student_name" value="{{ student.name }}">
+        教室名字：
+        <select name="class_name" id="">
+
+            {% for class in class_list %}
+                {% if student.class_in_id == class.id %}
+                    <option value="{{ class.id }}" selected>
+                        {{ class.name }}
+                    </option>
+                {% else %}
+                    <option value="{{ class.id }}">
+                        {{ class.name }}
+                    </option>
+                {% endif %}
+            {% endfor %}
+
+
+        </select>
+        <input type="submit">
+    </form>
+
+</div>
+
+</body>
+</html>
