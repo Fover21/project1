@@ -1,0 +1,541 @@
+- Django ORM操作
+	- 目录
+		- 一、ORM字段和字段的参数
+		- 二、ORM的查询-13种方法
+		- 三、单表的双下滑线的使用
+		- 四、外键的方法
+		- 五、多对多的方法
+		- 六、聚合和分组
+		- 七、F查询 和 Q查询
+
+	- 看专业的官方文档，做专业的程序员：https://docs.djangoproject.com/en/1.11/ref/models/querysets/
+
+	- 一、ORM字段和字段的参数
+	    - 常用字段
+	         常用字段
+                 AutoField
+                    自增的整形字段，必填参数primary_key=True，则成为数据库的主键。无该字段时，django自动创建。
+                    一个model不能有两个AutoField字段。
+
+                 IntegerField
+                    一个整数类型。数值的范围是 -2147483648 ~ 2147483647。
+
+                 CharField
+                    字符类型，必须提供max_length参数。max_length表示字符的长度。
+
+                 DateField
+                    日期类型，日期格式为YYYY-MM-DD，相当于Python中的datetime.date的实例
+                    参数：
+                    auto_now：每次修改时修改为当前日期时间。
+                    auto_now_add：新创建对象时自动添加当前日期时间。
+                    auto_now和auto_now_add和default参数是互斥的，不能同时设置。
+
+                 DatetimeField
+                    日期时间字段，格式为YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]，相当于Python中的datetime.datetime的实例。
+
+                 BooleanField(Field)
+                    布尔值类型
+             - 字段类型
+                AutoField(Field)
+                    - int自增列，必须填入参数 primary_key=True
+
+                BigAutoField(AutoField)
+                    - bigint自增列，必须填入参数 primary_key=True
+                    注：当model中如果没有自增列，则自动会创建一个列名为id的列
+                    from django.db import models
+                    class UserInfo(models.Model):
+                        # 自动创建一个列名为id的且为自增的整数列
+                        username = models.CharField(max_length=32)
+                    class Group(models.Model):
+                        # 自定义自增列
+                        nid = models.AutoField(primary_key=True)
+                        name = models.CharField(max_length=32)
+
+                SmallIntegerField(IntegerField):
+                    - 小整数 -32768 ～ 32767
+
+                PositiveSmallIntegerField(PositiveIntegerRelDbTypeMixin, IntegerField)
+                    - 正小整数 0 ～ 32767
+
+                IntegerField(Field)
+                    - 整数列(有符号的) -2147483648 ～ 2147483647
+
+                PositiveIntegerField(PositiveIntegerRelDbTypeMixin, IntegerField)
+                    - 正整数 0 ～ 2147483647
+
+                BigIntegerField(IntegerField):
+                    - 长整型(有符号的) -9223372036854775808 ～ 9223372036854775807
+
+                BooleanField(Field)
+                    - 布尔值类型
+
+                NullBooleanField(Field):
+                    - 可以为空的布尔值
+
+                CharField(Field)
+                    - 字符类型
+                    - 必须提供max_length参数， max_length表示字符长度
+
+                TextField(Field)
+                    - 文本类型
+
+                EmailField(CharField)：
+                    - 字符串类型，Django Admin以及ModelForm中提供验证机制
+
+                IPAddressField(Field)
+                    - 字符串类型，Django Admin以及ModelForm中提供验证 IPV4 机制
+
+                GenericIPAddressField(Field)
+                    - 字符串类型，Django Admin以及ModelForm中提供验证 Ipv4和Ipv6
+                    - 参数：
+                        protocol，用于指定Ipv4或Ipv6， 'both',"ipv4","ipv6"
+                        unpack_ipv4， 如果指定为True，则输入::ffff:192.0.2.1时候，可解析为192.0.2.1，开启此功能，需要protocol="both"
+
+                URLField(CharField)
+                    - 字符串类型，Django Admin以及ModelForm中提供验证 URL
+
+                SlugField(CharField)
+                    - 字符串类型，Django Admin以及ModelForm中提供验证支持 字母、数字、下划线、连接符（减号）
+
+                CommaSeparatedIntegerField(CharField)
+                    - 字符串类型，格式必须为逗号分割的数字
+
+                UUIDField(Field)
+                    - 字符串类型，Django Admin以及ModelForm中提供对UUID格式的验证
+
+                FilePathField(Field)
+                    - 字符串，Django Admin以及ModelForm中提供读取文件夹下文件的功能
+                    - 参数：
+                            path,                      文件夹路径
+                            match=None,                正则匹配
+                            recursive=False,           递归下面的文件夹
+                            allow_files=True,          允许文件
+                            allow_folders=False,       允许文件夹
+
+                FileField(Field)
+                    - 字符串，路径保存在数据库，文件上传到指定目录
+                    - 参数：
+                        upload_to = ""      上传文件的保存路径
+                        storage = None      存储组件，默认django.core.files.storage.FileSystemStorage
+
+                ImageField(FileField)
+                    - 字符串，路径保存在数据库，文件上传到指定目录
+                    - 参数：
+                        upload_to = ""      上传文件的保存路径
+                        storage = None      存储组件，默认django.core.files.storage.FileSystemStorage
+                        width_field=None,   上传图片的高度保存的数据库字段名（字符串）
+                        height_field=None   上传图片的宽度保存的数据库字段名（字符串）
+
+                DateTimeField(DateField)
+                    - 日期+时间格式 YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]
+
+                DateField(DateTimeCheckMixin, Field)
+                    - 日期格式      YYYY-MM-DD
+
+                TimeField(DateTimeCheckMixin, Field)
+                    - 时间格式      HH:MM[:ss[.uuuuuu]]
+
+                DurationField(Field)
+                    - 长整数，时间间隔，数据库中按照bigint存储，ORM中获取的值为datetime.timedelta类型
+
+                FloatField(Field)
+                    - 浮点型
+
+                DecimalField(Field)
+                    - 10进制小数
+                    - 参数：
+                        max_digits，小数总长度
+                        decimal_places，小数位长度
+
+                BinaryField(Field)
+                    - 二进制类型
+
+
+	    - 自定义字段
+	        - 自定义char数据类型
+	            自定义一个char类型字段：
+                class MyCharField(models.Field):
+                    """
+                    自定义的char类型的字段类
+                    """
+                    def __init__(self, max_length, *args, **kwargs):
+                        self.max_length = max_length
+                        super(MyCharField, self).__init__(max_length=max_length, *args, **kwargs)
+                    def db_type(self, connection):
+                        """
+                        限定生成数据库表的字段类型为char，长度为max_length指定的值
+                        """
+                        return 'char(%s)' % self.max_length
+            - 使用自定义char类型字段：
+                class Class(models.Model):
+                    id = models.AutoField(primary_key=True)
+                    title = models.CharField(max_length=25)
+                    # 使用自定义的char类型的字段
+                    cname = MyCharField(max_length=25)
+        - 自定义一个二进制字段，以及Django字段与数据库字段类型的对应关系。
+            -    class UnsignedIntegerField(models.IntegerField):
+                    def db_type(self, connection):
+                        return 'integer UNSIGNED'
+
+                # PS: 返回值为字段在数据库中的属性。
+                # Django字段与数据库字段类型对应关系如下：
+                    'AutoField': 'integer AUTO_INCREMENT',
+                    'BigAutoField': 'bigint AUTO_INCREMENT',
+                    'BinaryField': 'longblob',
+                    'BooleanField': 'bool',
+                    'CharField': 'varchar(%(max_length)s)',
+                    'CommaSeparatedIntegerField': 'varchar(%(max_length)s)',
+                    'DateField': 'date',
+                    'DateTimeField': 'datetime',
+                    'DecimalField': 'numeric(%(max_digits)s, %(decimal_places)s)',
+                    'DurationField': 'bigint',
+                    'FileField': 'varchar(%(max_length)s)',
+                    'FilePathField': 'varchar(%(max_length)s)',
+                    'FloatField': 'double precision',
+                    'IntegerField': 'integer',
+                    'BigIntegerField': 'bigint',
+                    'IPAddressField': 'char(15)',
+                    'GenericIPAddressField': 'char(39)',
+                    'NullBooleanField': 'bool',
+                    'OneToOneField': 'integer',
+                    'PositiveIntegerField': 'integer UNSIGNED',
+                    'PositiveSmallIntegerField': 'smallint UNSIGNED',
+                    'SlugField': 'varchar(%(max_length)s)',
+                    'SmallIntegerField': 'smallint',
+                    'TextField': 'longtext',
+                    'TimeField': 'time',
+                    'UUIDField': 'char(32)',
+
+        - 字段参数
+            - null          # 在数据库层面做的操作，数据库中字段是否可以为空
+            - blank         # Admin中是否允许用户为空   与null配合使用做两层校验
+            - db_column     # 数据库中字段的列名
+            - default       # 数据库中字段的默认值
+            - primary_key   # 数据库中字段是否为主键
+            - db_index      # 数据库中字段是否可以建立索引
+            - unique        # 数据库中是否可以建立唯一索引
+            unique_for_date     数据库中字段【日期】部分是否可以建立唯一索引
+            unique_for_month    数据库中字段【月】部分是否可以建立唯一索引
+            unique_for_year     数据库中字段【年】部分是否可以建立唯一索引
+
+
+            verbose_name        Admin中显示的字段名称
+            blank               Admin中是否允许用户输入为空
+            editable            Admin中是否可以编辑
+            help_text           Admin中该字段的提示信息
+            choices             Admin中显示选择框的内容，用不变动的数据放在内存中从而避免跨表操作
+                                如：gf = models.IntegerField(choices=[(0, '何穗'),(1, '大表姐'),],default=1)
+
+            error_messages      自定义错误信息（字典类型），从而定制想要显示的错误信息；
+                                字典健：null, blank, invalid, invalid_choice, unique, and unique_for_date
+                                如：{'null': "不能为空.", 'invalid': '格式错误'}
+
+            validators          自定义错误验证（列表类型），从而定制想要的验证规则
+                                from django.core.validators import RegexValidator
+                                from django.core.validators import EmailValidator,URLValidator,DecimalValidator,\
+                                MaxLengthValidator,MinLengthValidator,MaxValueValidator,MinValueValidator
+                                如：
+                                    test = models.CharField(
+                                        max_length=32,
+                                        error_messages={
+                                            'c1': '优先错信息1',
+                                            'c2': '优先错信息2',
+                                            'c3': '优先错信息3',
+                                        },
+                                        validators=[
+                                            RegexValidator(regex='root_\d+', message='错误了', code='c1'),
+                                            RegexValidator(regex='root_112233\d+', message='又错误了', code='c2'),
+                                            EmailValidator(message='又错误了', code='c3'), ]
+                                    )
+
+        - Model Meta 参数
+            - https://docs.djangoproject.com/en/1.11/ref/models/options/#model-meta-options
+            - class UserInfo(models.Model):
+                nid = models.AutoField(primary_key=True)
+                username = models.CharField(max_length=32)
+
+                class Meta:
+                    # 数据库中生成的表名称 默认 app名称 + 下划线 + 类名
+                    db_table = "table_name"
+
+                    # admin中显示的表名称
+                    verbose_name = '个人信息'
+
+                    # verbose_name加s
+                    verbose_name_plural = '所有用户信息'
+
+                    # 联合索引
+                    index_together = [
+                        ("pub_date", "deadline"),   # 应为两个存在的字段
+                    ]
+
+                    # 联合唯一索引
+                    unique_together = (("driver", "restaurant"),)   # 应为两个存在的字段
+
+        - 多表关系和参数
+            - ForeignKey(ForeignObject) # ForeignObject(RelatedField)
+                to,                 # 要进行关联的表名
+                to_field=None,      # 要关联的表中的字段名称
+                on_delete=None,     # 当删除关联表中的数据时，当前表与其关联的行的行为
+                                    - models.CASCADE，删除关联数据，与之关联也删除
+                                    - models.DO_NOTHING，删除关联数据，引发错误IntegrityError
+                                    - models.PROTECT，删除关联数据，引发错误ProtectedError
+                                    - models.SET_NULL，删除关联数据，与之关联的值设置为null（前提FK字段需要设置为可空）
+                                    - models.SET_DEFAULT，删除关联数据，与之关联的值设置为默认值（前提FK字段需要设置默认值）
+                                    - models.SET，删除关联数据，
+                                           a. 与之关联的值设置为指定值，设置：models.SET(值)
+                                           b. 与之关联的值设置为可执行对象的返回值，设置：models.SET(可执行对象)
+
+                                                def func():
+                                                    return 10
+
+                                                class MyModel(models.Model):
+                                                    user = models.ForeignKey(
+                                                        to="User",
+                                                        to_field="id"
+                                                        on_delete=models.SET(func),)
+                related_name=None,          # 反向操作时，使用的字段名，用于代替 【表名_set】 如： obj.表名_set.all()
+                related_query_name=None,    # 反向操作时，使用的连接前缀，用于替换【表名】     如： models.UserGroup.objects.filter(表名__字段名=1).values('表名__字段名')
+                limit_choices_to=None,      # 在Admin或ModelForm中显示关联数据时，提供的条件：
+                                            # 如：
+                                    - limit_choices_to={'nid__gt': 5}
+                                    - limit_choices_to=lambda : {'nid__gt': 5}
+
+                                    from django.db.models import Q
+                                    - limit_choices_to=Q(nid__gt=10)
+                                    - limit_choices_to=Q(nid=8) | Q(nid__gt=10)
+                                    - limit_choices_to=lambda : Q(Q(nid=8) | Q(nid__gt=10)) & Q(caption='root')
+                db_constraint=True          # 是否在数据库中创建外键约束
+                parent_link=False           # 在Admin中是否显示关联数据
+
+
+            - OneToOneField(ForeignKey)
+                to,                 # 要进行关联的表名
+                to_field=None       # 要关联的表中的字段名称
+                on_delete=None,     # 当删除关联表中的数据时，当前表与其关联的行的行为
+
+                                    ###### 对于一对一 ######
+                                    # 1. 一对一其实就是 一对多 + 唯一索引
+                                    # 2.当两个类之间有继承关系时，默认会创建一个一对一字段
+                                    # 如下会在A表中额外增加一个c_ptr_id列且唯一：
+                                            class C(models.Model):
+                                                nid = models.AutoField(primary_key=True)
+                                                part = models.CharField(max_length=12)
+
+                                            class A(C):
+                                                id = models.AutoField(primary_key=True)
+                                                code = models.CharField(max_length=1)
+
+            - ManyToManyField(RelatedField)
+                to,                         # 要进行关联的表名
+                related_name=None,          # 反向操作时，使用的字段名，用于代替 【表名_set】 如： obj.表名_set.all()
+                related_query_name=None,    # 反向操作时，使用的连接前缀，用于替换【表名】     如： models.UserGroup.objects.filter(表名__字段名=1).values('表名__字段名')
+                limit_choices_to=None,      # 在Admin或ModelForm中显示关联数据时，提供的条件：
+                                            # 如：
+                                                - limit_choices_to={'nid__gt': 5}
+                                                - limit_choices_to=lambda : {'nid__gt': 5}
+
+                                                from django.db.models import Q
+                                                - limit_choices_to=Q(nid__gt=10)
+                                                - limit_choices_to=Q(nid=8) | Q(nid__gt=10)
+                                                - limit_choices_to=lambda : Q(Q(nid=8) | Q(nid__gt=10)) & Q(caption='root')
+                symmetrical=None,           # 仅用于多对多自关联时，symmetrical用于指定内部是否创建反向操作的字段
+                                            # 做如下操作时，不同的symmetrical会有不同的可选字段
+                                                models.BB.objects.filter(...)
+
+                                                # 可选字段有：code, id, m1
+                                                    class BB(models.Model):
+
+                                                    code = models.CharField(max_length=12)
+                                                    m1 = models.ManyToManyField('self',symmetrical=True)
+
+                                                # 可选字段有: bb, code, id, m1
+                                                    class BB(models.Model):
+
+                                                    code = models.CharField(max_length=12)
+                                                    m1 = models.ManyToManyField('self',symmetrical=False)
+
+                through=None,               # 自定义第三张表时，使用字段用于指定关系表
+                through_fields=None,        # 自定义第三张表时，使用字段用于指定关系表中那些字段做多对多关系表
+                                                from django.db import models
+
+                                                class Person(models.Model):
+                                                    name = models.CharField(max_length=50)
+
+                                                class Group(models.Model):
+                                                    name = models.CharField(max_length=128)
+                                                    members = models.ManyToManyField(
+                                                        Person,
+                                                        through='Membership',
+                                                        through_fields=('group', 'person'),
+                                                    )
+
+                                                class Membership(models.Model):
+                                                    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+                                                    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+                                                    inviter = models.ForeignKey(
+                                                        Person,
+                                                        on_delete=models.CASCADE,
+                                                        related_name="membership_invites",
+                                                    )
+                                                    invite_reason = models.CharField(max_length=64)
+                db_constraint=True,         # 是否在数据库中创建外键约束
+                db_table=None,              # 默认创建第三张表时，数据库中表的名称
+
+
+    二、ORM的查询-13种方法
+        - 13中方法
+            1）all():                查询所有结果
+            2）get(**kwargs):        返回与所给筛选条件相匹配的对象，返回结果有且只有一个，如果符合筛选条件的对象超过一个或者没有出现就会抛出错误
+            3）filter(**kwargs):     他包含了与所给筛选条件匹配的对象
+            4）exclude(**kwargs):    他包含了与所给筛选条件不匹配的对象
+            5）values(*filed):       返回一个ValueQuerySet一个特殊的QuerySet，运行后得到的并不是一系列model的实例化对象，而是一个可迭代的字典序列
+            6）values_list(*filed):  他与values()非常相似，它返回的是一个元组序列，values返回的是一个字典序列
+            7）order_by(*filed):     对查询结果进行排序
+            8）reverse():            对查询结果反向排序，请注意reverse()通常只能在具有已定义的顺序的QuerySet上调用（在model类的Meta中指定ordering或者调用order_by()）
+            9）distinct():           从返回结果中剔除重复记录（如果查询跨越多个表，可能在计算QuerySet时得到重复的结果。此时可以使用distinct(),注意只有在PostgreSQL中支持按字段去重）
+            10) count()：            返回数据库中匹配查询（QuerySet）的对象数量
+            11）first():             返回第一条记录
+            12）last():              返回最后一条记录
+            13）exists():            如果QuerySet包含数据，就返回True，否则返回False
+
+        - 总结
+            - 返回QuerySet对象的方法有
+                - all()
+                - filter()
+                - exclude()
+                - order_by()
+                - reverse()
+                - distinct()
+            - 特殊的QuerySet
+                - values()          返回一个可迭代的字典序列
+                - values_list()     返回一个可迭代的元组序列
+            - 返回具体对象的
+                - get()
+                - first()
+                - last()
+            - 返回布尔值的方法
+                - exists()
+            - 返回数字的方法
+                - count()
+
+
+    三、单表的双下滑线的使用
+        - models.Tb1.object.filter(id__lt=10, id__gt=1)     # 返回id大于1小于10的值
+
+        - models.Tb1.object.filter(id__in=[1, 2, 3])        # 获取id等于1，2，3的数据
+        - models.Tb1.object.exclude(id__in=[1, 2, 3])       #  not in
+
+        - models.Tb1.object.filter(name__contains="ward")   # 获取name字段包含"ward的"
+        - models.Tb1.object.filer(name__icontains="ward")   # icontains 大小写不敏感
+
+        - models.Tb1.object.filter(id__range[1, 3])         # id范围是1到3的，等价于SQL的 between and
+        - 类似的还有： startswith, istartswith, endswith, iendswith
+
+        - date字段还可以
+           - models.Class.object.filter(first_day__year=2018)
+           - models.Class.object.filter(first_day__year=2018, first_day__month=2018)
+
+
+    四、外键的方法
+        - 正向查询
+            - 对象查找（跨表）
+                - 语法： 对象.关联字段.字段
+                - 实例：
+                    book_obj = models.Book.objects.first()  # 第一本书对象
+                    book_obj.publisher  # 得到这本书关联的出版社对象
+                    book_obj.publisher.name     # 得到出版社对象的名称
+            - 字段查找
+                - 语法：关联字段__字段
+                - 实例
+                    models.Book.objects.values_list("publisher__name")
+
+        - 反向查询
+            - 对象查找
+                - 语法：obj.表名_set
+                - 实例：
+                    publisher_obj = models.Publisher.objects.first()    # 找到第一个出版社对象
+                    books = publisher_obj.book_set.all()    # 找到第一个出版社的所有书
+                    title = books.values_list("title")  # 找到第一个出版社出版的所有书的书名
+            - 字段查找
+                - 语法：表名__字段
+                - 实例：
+                    titles = models.Publisher.objects.values_list("book__title")
+
+
+	五、多对多的方法
+	    - class RelatedManager
+	        - "关联管理器"是在一对多或者多对多的关联上下文中使用的管理器
+	        - 它存在下面两种情况
+	            - 外键关系的方向查询
+	            - 多对多关联关系
+	    - 方法
+	        - create()
+	            - 创建一个新的对象，保存对象，并将她添加到关联对象集之中，返回新创建的对象
+	                >>> import datetime
+                    >>> models.Author.objects.first().book_set.create(title="python从入门到精通", publish_date=datetime.date.today())
+            - add()
+                - 把指定的model对象添加到关联对象集中
+                    - 添加对象
+                        >>> author_objs = models.Author.objects.filter(id__lt=3)
+                        >>> models.Book.objects.first().authors.add(*author_objs)
+                    - 添加id
+                        >>> models.Book.objects.first().authors.add(*[1, 2])
+            - set()
+                - 更新model对象的关联对象
+                    >>> book_obj = models.Book.objects.first()
+                    >>> book_obj.authors.set([2, 3])
+
+            - remove()
+                - 从关联对象集合中移除执行的model对象
+                    >>> book_obj = models.Book.objects.first()
+                    >>> book_obj.authors.remove(3)
+            - clear()
+                - 从关联对象集合中移除一切对象
+                    >>> book_obj = models.Book.objects.first()
+                    >>> book_obj.authors.clear()
+                - 注意：
+                    - 对于ForeignKey对象，clear()和remove()方法仅在null=True时存在
+                    - 举个例子：
+                        ForeignKey字段没设置null=True时，
+                            class Book(models.Model):
+                                title = models.CharField(max_length=32)
+                                publisher = models.ForeignKey(to=Publisher)
+
+                        没有clear()和remove()方法：
+                            >>> models.Publisher.objects.first().book_set.clear()
+                            Traceback (most recent call last):
+                              File "<input>", line 1, in <module>
+                            AttributeError: 'RelatedManager' object has no attribute 'clear'
+
+                        当ForeignKey字段设置null=True时，
+                            class Book(models.Model):
+                                name = models.CharField(max_length=32)
+                                publisher = models.ForeignKey(to=Class, null=True)
+                            此时就有clear()和remove()方法：
+                            >>> models.Publisher.objects.first().book_set.clear()
+                        注意：
+                            对于所有类型的关联字段，add()、create()、remove()和clear(),set()都会马上更新数据库。
+                            换句话说，在关联的任何一端，都不需要再调用save()方法。
+
+
+
+
+	六、聚合和分组
+	七、F查询 和 Q查询
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
