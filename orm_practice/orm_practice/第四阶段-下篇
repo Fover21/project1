@@ -400,7 +400,7 @@
             13）exists():            如果QuerySet包含数据，就返回True，否则返回False
 
         - 总结
-            - 返回QuerySet对象的方法有
+            - 返回QuerySet对象列表的方法有
                 - all()
                 - filter()
                 - exclude()
@@ -411,9 +411,9 @@
                 - values()          返回一个可迭代的字典序列
                 - values_list()     返回一个可迭代的元组序列
             - 返回具体对象的
-                - get()
-                - first()
-                - last()
+                - get()     # 有且仅有一个否则报错
+                - first()   # 空取出None
+                - last()    # 空取出None
             - 返回布尔值的方法
                 - exists()
             - 返回数字的方法
@@ -422,6 +422,7 @@
 
     三、单表的双下滑线的使用
         - models.Tb1.object.filter(id__lt=10, id__gt=1)     # 返回id大于1小于10的值
+        - models.Tb1.object.filter(id__lte=10, id__gte=1)   # 返回id大于等于1小于等于10的值
 
         - models.Tb1.object.filter(id__in=[1, 2, 3])        # 获取id等于1，2，3的数据
         - models.Tb1.object.exclude(id__in=[1, 2, 3])       #  not in
@@ -520,22 +521,123 @@
 
 
 
-
 	六、聚合和分组
+	    - 聚合
+	        - aggregate()是QuerySet的一个终止字句，意思是说，他返回一个包含一些键值对的字典
+	        - 键的名称是聚合值得标识符，值是计算出来的聚合值，键的名称是按照字段和聚合该函数的名称自动生成出来的
+	        - 用到的内置函数
+	            from django.db.models import Avg, Sum, Max, Min, Count
+	            实例：
+	                >>> from django.db.models import Avg, Sum, Max, Min, Count
+                    >>> models.Book.objects.all().aggregate(Avg("price"))
+                    {'price__avg': 13.233333}
+                - 如果想要为聚合值指定一个名称，可以向聚合字句提供他
+                    >>> models.Book.objects.aggregate(average_price=Avg('price'))
+                    {'average_price': 13.233333}
+                - 如果希望不止一个聚合，可以向aggregate()自己中添加另一个参数。
+                - 所以，如果想知道所有图书的价格的最大值，最小值，也可以这样查询
+                    >>> models.Book.objects.all().aggregate(Avg("price"), Max("price"), Min("price"))
+                    {'price__avg': 13.233333, 'price__max': Decimal('19.90'), 'price__min': Decimal('9.90')}
+
+	    - 分组
+	        - 假设有一张公司职员表(employee)：
+	            id name age salary province dept
+	            1 张三 23 2000 北京 财务部
+	            ...
+                -
+                    使用原生SQl语句，按照部门分组求平均工资
+                        - select dept, AVG(salary) from employee group by dept;
+                    ORM查询
+                        - from django.db.models import Avg
+                        - Employee.objects.values("dept").annotate(avg=Avg("salary")).values("dept", "avg")
+
+            - 假设有一张employee表和一张dept表
+                employee表
+                id name age salary province dept_id
+                1 张三 23 2000 北京 1
+                ...
+
+                dept表
+                id name
+                1 财务部
+                ...
+
+                - 连表查询的分组
+                    使用原生SQL语句
+                        - select dept.name,AVG(salary) from employee inner join dept on (employee.dept_id=dept.id) group by dept_id;
+                    ORM查询
+                        - from django.db.models import Avg
+                        - models.Dept.objects.annotate(avg=Avg("employee__salary")).values("name", "avg")
+
+            - 更多实例
+                示例1：统计每一本书的作者个数
+                    >>> book_list = models.Book.objects.all().annotate(author_num=Count("author"))
+                    >>> for obj in book_list:
+                          print(obj.author_num)
+
+                示例2：统计出每个出版社买的最便宜的书的价格
+                    >>> publisher_list = models.Publisher.objects.annotate(min_price=Min("book__price"))
+                    >>> for obj in publisher_list:
+                    ...     print(obj.min_price)
+
+                    9.90
+                    19.90
+
+                    方法二：
+                    >>> models.Book.objects.values("publisher__name").annotate(min_price=Min("price"))
+                    <QuerySet [{'publisher__name': '沙河出版社', 'min_price': Decimal('9.90')}, {'publisher__name': '人民出版社', 'min_price': Decimal('19.90')}]>
+
+                示例3：统计不止一个作者的图书
+                    >>> models.Book.objects.annotate(author_num=Count("author")).filter(author_num__gt=1)
+                    <QuerySet [<Book: 番茄物语>]>
+
+                示例4：根据一本图书作者数量的多少对查询集 QuerySet进行排序
+                    >>> models.Book.objects.annotate(author_num=Count("author")).order_by("author_num")
+                    <QuerySet [<Book: 香蕉物语>, <Book: 橘子物语>, <Book: 番茄物语>]>
+
+                示例5：查询各个作者出的书的总价格
+                    >>> models.Author.objects.annotate(sum_price=Sum("book__price")).values("name", "sum_price")
+                    <QuerySet [{'name': '小精灵', 'sum_price': Decimal('9.90')}, {'name': '小仙女', 'sum_price': Decimal('29.80')}, {'name': '小魔女', 'sum_price': Decimal('9.90')}]>
+
+
 	七、F查询 和 Q查询
+	    - F 查询
+            在上面所有的例子中，我们构造的过滤器都只是将字段值与某个常量做比较。如果我们要对两个字段的值做比较，那该怎么做呢？
+            Django 提供 F() 来做这样的比较。F() 的实例可以在查询中引用字段，来比较同一个 model 实例中两个不同字段的值。
+
+            示例1：
+                查询评论数大于收藏数的书籍
+                from django.db.models import F
+                models.Book.objects.filter(commnet_num__gt=F('keep_num'))
+
+                Django 支持 F() 对象之间以及 F() 对象和常数之间的加减乘除和取模的操作。
+                models.Book.objects.filter(commnet_num__lt=F('keep_num')*2)
+
+                修改操作也可以使用F函数,比如将每一本书的价格提高30元
+                models.Book.objects.all().update(price=F("price")+30)
+
+            - 引申：
+
+            如果要修改char字段咋办？
+            如：把所有书名后面加上(第一版)
+                >>> from django.db.models.functions import Concat
+                >>> from django.db.models import Value
+                >>> models.Book.objects.all().update(title=Concat(F("title"), Value("("), Value("第一版"), Value(")")))
 
 
+	    - Q 查询
+	        filter() 等方法中的关键字参数查询都是一起进行“AND” 的。 如果你需要执行更复杂的查询（例如OR语句），你可以使用Q对象。
 
+            示例1：
+                查询作者名是小仙女或小魔女的
+                models.Book.objects.filter(Q(authors__name="小仙女")|Q(authors__name="小魔女"))
+                你可以组合& 和|  操作符以及使用括号进行分组来编写任意复杂的Q 对象。同时，Q 对象可以使用~ 操作符取反，这允许组合正常的查询和取反(NOT) 查询。
 
+            示例：查询作者名字是小仙女并且不是2018年出版的书的书名。
+                >>> models.Book.objects.filter(Q(author__name="小仙女") & ~Q(publish_date__year=2018)).values_list("title")
+                <QuerySet [('番茄物语',)]>
+                查询函数可以混合使用Q 对象和关键字参数。所有提供给查询函数的参数（关键字参数或Q 对象）都将"AND”在一起。但是，如果出现Q 对象，它必须位于所有关键字参数的前面。
 
-
-
-
-
-
-
-
-
-
-
-
+            例如：查询出版年份是2017或2018，书名中带物语的所有书。
+                >>> models.Book.objects.filter(Q(publish_date__year=2018) | Q(publish_date__year=2017), title__icontains="物语")
+                <QuerySet [<Book: 番茄物语>, <Book: 香蕉物语>, <Book: 橘子物语>]>

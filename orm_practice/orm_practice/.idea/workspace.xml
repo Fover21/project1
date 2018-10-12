@@ -58,7 +58,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/orm_practice/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="456">
@@ -67,11 +67,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="第四阶段-下篇" pinned="false" current-in-tab="false">
+      <file leaf-file-name="第四阶段-下篇" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/第四阶段-下篇">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1390">
-              <caret line="450" column="70" lean-forward="true" selection-start-line="450" selection-start-column="70" selection-end-line="450" selection-end-column="70" />
+            <state relative-caret-position="-1653">
+              <caret line="449" column="29" lean-forward="true" selection-start-line="449" selection-start-column="29" selection-end-line="449" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -96,12 +96,12 @@
         <option value="$PROJECT_DIR$/orm_test/一对多联系.py" />
         <option value="$PROJECT_DIR$/orm_test/一对多练习.py" />
         <option value="$PROJECT_DIR$/orm_test/多对多练习.py" />
-        <option value="$PROJECT_DIR$/第四阶段-下篇" />
         <option value="$PROJECT_DIR$/app02/models.py" />
         <option value="$PROJECT_DIR$/orm_practice/homework.py" />
         <option value="$PROJECT_DIR$/app02/admin.py" />
         <option value="$PROJECT_DIR$/orm_test/homework.py" />
         <option value="$PROJECT_DIR$/orm_practice/settings.py" />
+        <option value="$PROJECT_DIR$/第四阶段-下篇" />
       </list>
     </option>
   </component>
@@ -121,8 +121,9 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="756" />
     <option name="y" value="23" />
-    <option name="width" value="1760" />
+    <option name="width" value="1563" />
     <option name="height" value="845" />
   </component>
   <component name="ProjectView">
@@ -136,17 +137,6 @@
             <path>
               <item name="orm_practice" type="b2602c69:ProjectViewProjectNode" />
               <item name="orm_practice" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="orm_practice" type="b2602c69:ProjectViewProjectNode" />
-              <item name="orm_practice" type="462c0819:PsiDirectoryNode" />
-              <item name="app01" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="orm_practice" type="b2602c69:ProjectViewProjectNode" />
-              <item name="orm_practice" type="462c0819:PsiDirectoryNode" />
-              <item name="app01" type="462c0819:PsiDirectoryNode" />
-              <item name="migrations" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="orm_practice" type="b2602c69:ProjectViewProjectNode" />
@@ -315,7 +305,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1760" height="845" extended-state="0" />
+    <frame x="625" y="23" width="1563" height="845" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="13" />
@@ -325,7 +315,7 @@
       <window_info anchor="bottom" id="Version Control" order="2" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" order="3" sideWeight="0.49928367" weight="0.48652482" />
       <window_info anchor="bottom" id="Terminal" order="4" weight="0.31205675" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14102565" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14088216" />
       <window_info anchor="bottom" id="Docker" order="5" show_stripe_button="false" />
       <window_info anchor="right" id="Database" weight="0.24283667" />
       <window_info anchor="right" id="SciView" />
@@ -470,13 +460,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/第四阶段-下篇">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1390">
-          <caret line="450" column="70" lean-forward="true" selection-start-line="450" selection-start-column="70" selection-end-line="450" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/orm_test/homework.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
@@ -488,6 +471,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="456">
           <caret line="128" column="37" selection-start-line="128" selection-start-column="37" selection-end-line="128" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/第四阶段-下篇">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1653">
+          <caret line="449" column="29" lean-forward="true" selection-start-line="449" selection-start-column="29" selection-end-line="449" selection-end-column="29" />
         </state>
       </provider>
     </entry>
