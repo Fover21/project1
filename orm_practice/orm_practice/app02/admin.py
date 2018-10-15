@@ -4,4 +4,11 @@ from django.contrib import admin
 
 from app02 import models
 
-admin.site.register((models.Author, models.Publisher, models.Book))
+
+class PublisherAdmin(admin.ModelAdmin):
+    list_display = ('name', 'city')
+    search_fields = ('name', 'city')
+
+
+admin.site.register(models.Publisher, PublisherAdmin)
+admin.site.register((models.Author, models.Book))
