@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        input {
+            width: 300px;
+        }
+
+        #pp {
+            width: 30px;
+        }
+
+        #ppp {
+            width: 258px;
+        }
+
+        .inner {
+            width: 500px;
+            height: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align: center">
+    注册页面
+</h1>
+
+<div class="inner">
+
+    <p>
+        邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：
+        <input type="email" name="email" placeholder="需要通过邮件激活账户" id="email0">
+    <span id="show_email"></span>
+    </p>
+
+    <p>
+        手机号码：
+        <input type="text" id="pp" value="+86">
+        <input type="text" name="phone" placeholder="激活账户需要手机短信" id="ppp">
+        <span id="show_phone"></span>
+    </p>
+    <p>
+        登录名称：
+        <input type="text" name="name" placeholder="登录用户名，不少于4字符" id="name">
+        <span id="show_name"></span>
+    </p>
+    <p>
+        显示名称：
+        <input type="text" name="showname" placeholder="即昵称，不少于2字符" id="showName">
+        <span id="show_showName"></span>
+    </p>
+    <p>
+        密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：
+        <input type="password" name="password1" placeholder="至少8位，必须包含字母、数字、特殊字符" id="pwd">
+        <span id="show_pwd"></span>
+    </p>
+    <p>
+        确认密码：
+        <input type="password" name="password2" placeholder="请输入确认密码" id="pwdAgain">
+        <span id="show_pwdAgain"></span>
+    </p>
+    <p>
+        <button type="submit" id="register">注册</button>
+        <span id="show_submit"></span>
+    </p>
+</div>
+
+<script src="/static/jquery-3.3.1.min.js"></script>
+<script src="/static/ajax_setup.js"></script>
+<script>
+    $('#register').click(function () {
+        $.ajax({
+            url: '/register/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd_Again: $('#pwdAgain').val(),
+                pwd: $('#pwd').val(),
+
+            },
+            success: function (res) {
+                $('#show_submit').text(res)
+            }
+        })
+    });
+
+    $('#email0').blur(function () {
+        $.ajax({
+            url: '/email/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd: $('#pwd').val(),
+                pwd_Again: $('#pwd_Again').val(),
+            },
+            success: function (res) {
+                $('#show_email').text(res)
+            }
+        }).focus(function () {
+            $(this).next().text('')
+        })
+    });
+
+    $('#ppp').blur(function () {
+        $.ajax({
+            url: '/phone/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd: $('#pwd').val(),
+                pwd_Again: $('#pwd_Again').val(),
+            },
+            success: function (res) {
+                $('#show_phone').text(res)
+            }
+        })
+    });
+
+
+    $('#name').blur(function () {
+        $.ajax({
+            url: '/name/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd: $('#pwd').val(),
+                pwd_Again: $('#pwd_Again').val(),
+            },
+            success: function (res) {
+                $('#show_name').text(res)
+            }
+        })
+    });
+
+
+    $('#showName').blur(function () {
+        $.ajax({
+            url: '/show_name/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd: $('#pwd').val(),
+                pwd_Again: $('#pwd_Again').val(),
+            },
+            success: function (res) {
+                $('#show_showName').text(res)
+            }
+        })
+    });
+
+
+    $('#pwd').blur(function () {
+        $.ajax({
+            url: '/pwd/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd: $('#pwd').val(),
+                pwd_Again: $('#pwd_Again').val(),
+            },
+            success: function (res) {
+                $('#show_pwd').text(res)
+            }
+        })
+    });
+
+
+    $('#pwdAgain').blur(function () {
+        $.ajax({
+            url: '/pwd_Again/',
+            type: 'post',
+            data: {
+                email1: $('#email0').val(),
+                phone: $('#ppp').val(),
+                name: $('#name').val(),
+                show_name: $("#showName").val(),
+                pwd: $('#pwd').val(),
+                pwd_Again: $('#pwdAgain').val(),
+            },
+            success: function (res) {
+                $('#show_pwdAgain').text(res)
+            }
+        })
+    });
+</script>
+</body>
+</html>

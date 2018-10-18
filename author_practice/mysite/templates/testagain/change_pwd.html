@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="" method="post">
+    {% csrf_token %}
+    <p>
+        {{ form_obj.old_password.label }}
+        {{ form_obj.old_password }}
+        {{ form_obj.old_password.errors.0 }}
+    </p>
+    <p>
+        {{ form_obj.new_password.label }}
+        {{ form_obj.new_password }}
+        {{ form_obj.new_password.errors.0 }}
+    </p>
+    <p>
+        {{ form_obj.re_password.label }}
+        {{ form_obj.re_password }}
+        {{ form_obj.re_password.errors.0 }}
+    </p>
+    <p>
+        <input type="submit">
+    </p>
+</form>
+
+
+</body>
+</html>

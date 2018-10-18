@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>注册页面</h1>
+<form action="" method="post">
+    {% csrf_token %}
+    <p>
+        {{ form_obj.username.label }}
+        {{ form_obj.username }}
+        {{ form_obj.username.errors.0 }}
+    </p>
+    <p>
+        {{ form_obj.password.label }}
+        {{ form_obj.password }}
+        {{ form_obj.password.errors.0 }}
+    </p>
+    <p>
+        {{ form_obj.re_password.label }}
+        {{ form_obj.re_password }}
+        {{ form_obj.re_password.errors.0 }}
+    </p>
+    <input type="submit">
+</form>
+ 
+
+</body>
+</html>

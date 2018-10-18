@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+
+
+
+<div>
+
+
+    <form action="" method="post">
+
+        {% csrf_token %}
+
+        <p>
+            用户名：
+            <input type="text" name="user">  <span style="color: red">{{ name_error }}</span>
+        </p>
+        <p>
+            密码：
+            <input type="password" name="pwd">
+        </p>
+
+        <p>
+            <input type="submit" value="注册">
+        </p>
+
+    </form>
+
+</div>
+
+</body>
+</html>

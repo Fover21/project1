@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+</head>
+<body>
+
+
+
+<div>
+
+
+    <form action="" method="post" novalidate>
+
+        {% csrf_token %}
+{#        {{ form_obj.as_p }}#}
+        <p>
+            {{ form_obj.user.label }}
+            {{ form_obj.user }}
+            {{ form_obj.user.errors.0 }}
+        </p>
+
+        <p>
+            {{ form_obj.pwd.label }}
+            {{ form_obj.pwd }}
+            {{ form_obj.pwd.errors.0 }}
+        </p>
+
+        <p>
+            {{ form_obj.gender.label }}
+            {{ form_obj.gender }}
+        </p>
+
+        <p>
+            {{ form_obj.hobby.label }}
+            {{ form_obj.hobby }}
+        </p>
+
+        <p>
+            {{ form_obj.phone.label }}
+            {{ form_obj.phone }}
+            {{ form_obj.phone.errors.0 }}
+        </p>
+
+        <p>
+            {{ form_obj.email.label }}
+            {{ form_obj.email }}
+            {{ form_obj.email.errors.0 }}
+        </p>
+
+        <p>
+            <input type="submit" value="注册">
+        </p>
+
+    </form>
+
+</div>
+
+</body>
+</html>

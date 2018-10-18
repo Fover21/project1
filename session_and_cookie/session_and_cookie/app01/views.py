@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
+from functools import wraps
 
 
 # -----------------------cookie--------------------------
@@ -53,6 +54,7 @@ from django.shortcuts import render, HttpResponse, redirect
 
 # 此装饰器的作用就是讲所有没有session验证的页面都需要验证后方可跳转
 def login_required(fn):
+    @wraps(fn)
     def inner(request, *args, **kwargs):
         if not request.session.get('is_login') == '1':
             next = request.path_info
@@ -81,6 +83,11 @@ def login(request):
 
 @login_required
 def home(request):
+    '''
+    in home
+    :param request:
+    :return:
+    '''
     return HttpResponse('这是home页面')
 
 
@@ -96,3 +103,8 @@ def logout(request):
     request.session.flush()  # 删除该用户的所有数据，删除cookie
     ret = redirect('/login/')
     return ret
+
+
+if __name__ == '__main__':
+    print(home.__doc__)
+    print(home.__name__)

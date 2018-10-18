@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{#<form action="" method="post">#}
+{#    {% csrf_token %}#}
+{#    <p>#}
+{#        <input type="text" name="i1" value="{{ i1 }}">+#}
+{#        <input type="text" name="i2" value="{{ i2 }}">=#}
+{#        <input type="text" name="i3" value="{{ i3 }}">#}
+{#        <input type="submit" value="计算">#}
+{#    </p>#}
+{##}
+{#</form>#}
+
+
+<div>
+    <p>
+        {% csrf_token %}
+        <input type="text" name="i1">+
+        <input type="text" name="i2">=
+        <input type="text" name="i3">
+        <button id="b1">计算</button>
+    </p>
+</div>
+
+
+<hr>
+
+{#<form action="{% url 'uu' %}" method="post">#}
+{#    {% csrf_token %}#}
+{#    <input type="submit">#}
+{#</form>#}
+
+
+<hr>
+
+<p>
+    <input type="file" id="upload">
+    <button class="but">上传</button>
+    <span class="show"></span>
+</p>
+
+<script src="/static/jquery-3.3.1.min.js"></script>
+<script>
+        {#计算#}
+    $('#b1').click(function () {
+        $.ajax({
+                url: '/calc/',
+                type: 'post',
+                {#方式一 #}
+                headers: {'X-CSRFToken': $('[name="csrfmiddlewaretoken"]').val()},
+                data: {
+                    {#方式二 #}
+                    csrfmiddlewaretoken: $('[name="csrfmiddlewaretoken"]').val(),
+                    i1: $('[name="i1"]').val(),
+                    i2: $('[name="i2"]').val()
+                },
+                success: function (res) {
+                    $('[name="i3"]').val(res)
+                }
+            }
+        )
+    });
+
+    {#    上传文件#}
+    $(".but").click(function () {
+        var formData = new FormData();
+        formData.append("file", $("#upload")[0].files[0]);
+        $.ajax({
+            url: "/upload/",
+            type: "POST",
+            headers: {'X-CSRFToken': $('[name="csrfmiddlewaretoken"]').val()},
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (data) {
+                console.log(data);
+                $(".show").html("success!!!")
+            }
+        })
+    })
+
+</script>
+</body>
+</html>
