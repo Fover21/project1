@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>用户名</th>
+            <th>密码</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.pwd }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation" class="navbar-right">
+        <ul class="pagination">
+
+            {#            {% for num in total_num %}#}
+            {#                <li><a href="/user_list/?page={{ num }}">{{ num }}</a></li>#}
+            {#            {% endfor %}#}
+            {#            {{ html_str|safe }}#}
+            {{ html_str }}
+        </ul>
+    </nav>
+
+{% endblock %}

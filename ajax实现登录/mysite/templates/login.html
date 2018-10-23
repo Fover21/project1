@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-1=10">
+            <form class="form-horizontal" id="form_data" action="/login/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username" class="col-sm-2 control-label">用户名</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="username" placeholder="username" name="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-2 control-label">密码</label>
+                    <div class="col-sm-5">
+                        <input type="password" class="form-control" id="password" placeholder="password" name="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-1">
+{#                            文字部分#}
+                            <label for="vialdCode" class="col-sm-2 control-label">验证码</label>
+                             <div class="col-sm-5">
+                                <input type="text" class="form-control vialdCode_text" id="vialdCode" placeholder="验证码" name="vialdCode">
+                            </div>
+{#                            图片部分#}
+                             <div class="col-md-5">
+                            <img class="vialdCode_img" src="/get_vaildCode_img/" alt="" width="200px" height="100px">
+{#                                 <a href=""></a>     #}
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> 下次自动登录
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <p>
+                            <button type="button" class="btn btn-success login">登录</button>
+                            <span class="error has-error"></span></p>
+                        <p>
+                            <button type="button" class="btn btn-primary register">注册</button>
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/static/jquery-3.3.1.min.js"></script>
+<script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+<script>
+    $(function () {
+        //给登录按钮增加事件
+        $(".login").click(function () {
+            function foo() {
+                $(".error").html("")
+            }
+
+            //用post的话就可以不用ajax了，ajax里面都包括了
+            $.post({
+                url: '/login/',
+                headers: {"X-CSRFToken": $.cookie('csrftoken')},
+                data: $("#form_data").serialize(),
+                {#            contentType:'application/json',#}
+                success: function (data) {
+                    var data = JSON.parse(data);
+                    console.log(typeof data);
+                    if (data["flag"]) {
+                        window.location.href = '/index/'
+                    }
+                    else {
+                        $(".error").html(data["error_msg"]);
+                        setTimeout(foo, 3000)
+                    }
+                }
+            })
+        });
+
+        //给注册按钮增加事件
+        $(".register").click(function () {
+            window.location.href = '/register/'
+        });
+
+        //#给验证码刷新
+        $(".vialdCode_img").click(function () {
+{#            方式一：dom方法#}
+{#            $(this)[0].src+="?"#}
+{#            方式二：jQuery的attr方法#}
+            $(this).attr("src",$(this).attr("src")+'?')
+        })
+    })
+
+</script>
+</body>
+</html>
