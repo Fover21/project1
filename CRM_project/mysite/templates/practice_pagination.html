@@ -23,6 +23,13 @@
                 {% endfor %}
                 </tbody>
             </table>
+
+            <form action="/practice_pagination/" method="post">
+                {% csrf_token %}
+                输入页面数：
+                <input type="text" name="page">
+                <input type="submit">
+            </form>
             {#    分页的模板代码，用的是Bootstrap分页样式    #}
             <nav aria-label="Page navigation" class="navbar-right" style="margin-right: 5px">
                 <ul class="pagination">

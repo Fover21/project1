@@ -7,7 +7,7 @@
     <title>CRM管理系统</title>
     <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.3.7/css/bootstrap.min.css' %}">
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
-    <link rel="icon" href="{% static 'img/layout/luffy-logo.png' %}">
+    <link rel="icon" href="{% static 'css/img/layout/luffy-logo.png' %}">
     <link rel="stylesheet" href="{% static 'plugins/font-awesome/css/font-awesome.css' %}">
     {% block css %}
 
@@ -25,34 +25,34 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <img src="{% static 'img/layout/logo.svg' %} " alt="" class="navbar-left" style="margin-top: 5px">
+            <img src="{% static 'css/img/layout/logo.svg' %} " alt="" class="navbar-left" style="margin-top: 5px">
             <a class="navbar-brand" href="#" style="margin-left: 5px">CRM管理系统</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">任务 <i class="fa fa-tasks" aria-hidden="true"></i> </a></li>
-
                 <li><a href="#">通知 <i class="fa fa-bell" aria-hidden="true"></i> </a></li>
                 <li><a href="#">消息 <i class="fa fa-at" aria-hidden="true"></i> </a></li>
                 <li>
                     <div class="btn-group">
 
-                        <img src="{% static 'img/layout/default.png' %}" alt="" class="img-circle"
+                        <img src="{% static 'css/img/layout/default.png' %}" alt="" class="img-circle"
                              style="height: 40px; margin-top: 5px" data-toggle="dropdown"
                              aria-haspopup="true" aria-expanded="false"> <span class="caret"></span>
 
                         <ul class="dropdown-menu">
                             <li><a href="/register/">注册</a></li>
-                            <li><a href="/login/">登录</a></li>
+                            <li><a href="{% url 'login' %}">登录</a></li>
                             <li><a href="#">个人中心</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">注销</a></li>
+                            <li><a href="{% url 'logout' %}">注销</a></li>
                         </ul>
                     </div>
                 </li>
             </ul>
             <form class="navbar-form navbar-right">
                 <input type="text" class="form-control" placeholder="Search...">
+                 <button class="btn btn-primary btn-sm">搜索 <i class="fa fa-search"></i></button>
             </form>
         </div>
     </div>
@@ -62,10 +62,13 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li class=""><a href="/crm/customer_list/">用户信息 <span class="sr-only">(current)</span></a></li>
-                <li><a href="/user_list/">测试信息</a></li>
+                <li class=""><a href="{% url 'crm:customer' %}">用户信息(公户) <span class="sr-only">(current)</span></a></li>
+                <li><a href="{% url 'crm:my_customer' %}">我的用户(私户)</a></li>
+                <li><a href="{% url 'crm:consult_record' 0 %}">我的跟进记录</a></li>
+                 <li><a href="{% url 'crm:enrollment' 0 %}">报名信息</a></li>
+                 <li><a href="{% url 'crm:class_list' %}">班级信息</a></li>
+                <li><a href="/user_list/">测试分页</a></li>
                 <li><a href="/practice_pagination/">练习分页</a></li>
-                <li><a href="#">新功能开发中...</a></li>
                 <li><a href="#">新功能开发中...</a></li>
             </ul>
         </div>
@@ -84,7 +87,11 @@
 <script src="{% static 'plugins/bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'plugins/bootstrap-3.3.7/js/npm.js' %}"></script>
 <script>
-
+    $(".sidebar a").each(function () {
+        if (location.href.indexOf(this.href) === 0) {
+            $(this).parent().addClass('active')
+        }
+    })
 </script>
 
 {% block js %}

@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
+from django.shortcuts import reverse
 
 course_choices = (('LinuxL', 'Linux中高级'),
                   ('PythonFullStack', 'Python高级全栈开发'),)
@@ -113,6 +114,14 @@ class Customer(models.Model):
             '<span style="background-color: {};color: white;padding: 3px">{}</span>'.format(color_dict[self.status],
                                                                                             self.get_status_display()))
 
+    def enroll_link(self):
+        if not self.enrollment_set.exists():
+            return mark_safe('<a href="{}">添加报名表</a>'.format(reverse('crm:add_enrollment', args=(self.id,))))
+        else:
+            return mark_safe(
+                '<a href="{}">添加</a> | <a href="{}">查看</a>'.format(reverse('crm:add_enrollment', args=(self.id,)),
+                                                                   reverse('crm:enrollment', args=(self.id,))))
+
 
 class Campuses(models.Model):
     """
@@ -151,10 +160,13 @@ class ClassList(models.Model):
                                   null=True)
 
     def __str__(self):
-        return '{}--{}({})'.format(self.course, self.semester, self.campuses)
+        return "{}{}({})".format(self.get_course_display(), self.semester, self.campuses)
 
     class Meta:
         unique_together = ("course", "semester", 'campuses')
+
+    def show_teachers(self):
+        return '|'.join([i.name for i in self.teachers.all()])
 
 
 class ConsultRecord(models.Model):
@@ -227,10 +239,13 @@ class CourseRecord(models.Model):
     homework_memo = models.TextField('作业描述', max_length=500, blank=True, null=True)
     scoring_point = models.TextField('得分点', max_length=300, blank=True, null=True)
     re_class = models.ForeignKey('ClassList', verbose_name="班级")
-    teacher = models.ForeignKey('UserProfile', verbose_name="讲师")
+    teacher = models.ForeignKey('UserProfile', verbose_name="班主任")
 
     class Meta:
         unique_together = ('re_class', 'day_num')
+
+    def __str__(self):
+        return '{}({})'.format(self.re_class, self.day_num)
 
 
 class StudyRecord(models.Model):

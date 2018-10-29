@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% if edit_id is None %}
+                <h1>添加信息</h1>
+                {% else %}
+                <h1>编辑信息</h1>
+            {% endif %}
+        </div>
+        <div class="panel-body">
+
+        <div class="row">
+             <div class="col-sm-8 col-md-offset-2">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% for field in form_obj %}
+                    <div class="form-group row {% if  field.errors.0 %}has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}"
+                               class="col-sm-2 control-label">{{ field.label }}</label>
+                        <div class="col-sm-10">
+                            {{ field }}
+                        </div>
+                        <span class="help-block">{{ field.errors.0 }}</span>
+                    </div>
+                {% endfor %}
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">提交 in</button>
+            </form>
+             </div>
+        </div>
+        </div>
+
+    </div>
+
+{% endblock %}

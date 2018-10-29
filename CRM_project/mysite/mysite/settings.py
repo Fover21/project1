@@ -64,7 +64,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'string_if_invalid': '暂无',
+            # 'string_if_invalid': '暂无',
         },
     },
 ]
@@ -133,3 +133,5 @@ STATICFILES_DIRS = [
 ]
 
 AUTH_USER_MODEL = 'crm.UserProfile'
+
+CUSTOMER_MAX_NUM = 150

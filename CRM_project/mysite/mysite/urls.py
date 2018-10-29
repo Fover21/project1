@@ -15,22 +15,24 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from crm import views
+from crm.views import consultant
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # 登录
-    url(r'^login/', views.login),
+    url(r'^login/', consultant.login, name='login'),
+    # 注销
+    url(r'^logout/', consultant.login, name='logout'),
 
     # 注册
-    url(r'^register/', views.register),
+    url(r'^register/', consultant.register),
     # 展示客户信息
     url(r'^crm/', include('crm.urls', namespace='crm')),
 
 
     # 测试分页
-    url(r'^user_list/', views.user_list),
+    url(r'^user_list/', consultant.user_list),
     # 练习分页
-    url(r'^practice_pagination/', views.practice_pagination),
+    url(r'^practice_pagination/', consultant.practice_pagination),
 ]
