@@ -21,9 +21,9 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # 登录
-    url(r'^login/', consultant.login, name='login'),
+    url(r'^login/$', consultant.login, name='login'),
     # 注销
-    url(r'^logout/', consultant.login, name='logout'),
+    url(r'^logout/$', consultant.logout, name='logout'),
 
     # 注册
     url(r'^register/', consultant.register),

@@ -9,6 +9,7 @@ from django.http import QueryDict
 from django.db import transaction
 from django.conf import settings
 from utils import pagination
+from django.contrib.auth.decorators import login_required
 
 
 # 展示班级

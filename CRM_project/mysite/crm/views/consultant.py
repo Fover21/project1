@@ -9,6 +9,7 @@ import copy
 from django.http import QueryDict
 from django.db import transaction
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -39,7 +40,7 @@ def register(request):
             # 方式二
             obj = form_obj.save()
             print('obj', obj)
-            obj.set_password('obj.password')
+            obj.set_password(obj.password)
             obj.save()
             return redirect(reverse('login'))
     return render(request, 'register.html', {'form_obj': form_obj})
