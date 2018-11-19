@@ -456,34 +456,39 @@ model</ColNames>
       <Position>4</Position>
       <DataType>char(32)|0s</DataType>
     </column>
-    <key id="106" parent="16">
+    <column id="106" parent="16" name="type">
+      <Position>5</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="107" parent="16">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="107" parent="17" name="type">
+    <column id="108" parent="17" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="108" parent="17" name="name">
+    <column id="109" parent="17" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="109" parent="17" name="tbl_name">
+    <column id="110" parent="17" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="110" parent="17" name="rootpage">
+    <column id="111" parent="17" name="rootpage">
       <Position>4</Position>
       <DataType>integer|0s</DataType>
     </column>
-    <column id="111" parent="17" name="sql">
+    <column id="112" parent="17" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="112" parent="18" name="name">
+    <column id="113" parent="18" name="name">
       <Position>1</Position>
     </column>
-    <column id="113" parent="18" name="seq">
+    <column id="114" parent="18" name="seq">
       <Position>2</Position>
     </column>
   </database-model>

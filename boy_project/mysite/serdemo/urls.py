@@ -15,9 +15,28 @@ Including another URLconf
 """
 from django.conf.urls import url
 from serdemo import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'book', views.BookModelView)
 
 urlpatterns = [
+    # 第一次
+    # url(r'^book/$', views.BookView.as_view()),
+    # url(r'^book/(?P<id>\d+)', views.BookEditView.as_view()),
 
-    url(r'^book/$', views.BookView.as_view()),
-    url(r'^book/(?P<id>\d+)', views.BookEditView.as_view()),
+    # 第二次
+    # url(r'^book/$', views.BookView.as_view()),
+    # url(r'^book/(?P<id>\d+)', views.BookEditView.as_view()),
+
+    # 第三次
+    # url(r'^book/$', views.BookModelView.as_view({"get": "list", "post": "create"})),
+    # url(r'^book/(?P<id>\d+)', views.BookModelView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"})),
+
+
+    # url(r'book_page$', views.PageBookView.as_view())
 ]
+
+# 第三次
+urlpatterns += router.urls
+

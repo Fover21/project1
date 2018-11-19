@@ -120,3 +120,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_RATES": {
+        "WD": "3/m",  # 一分钟访问三次
+    },
+    # 'DEFAULT_AUTHENTICATION_CLASSES': ["per_auth.auth.MyAuth", ]
+
+    # 版本信息配置
+    "DEFAULT_VERSIONING_CLASS": "per_auth.version.MyVersion",
+    'DEFAULT_VERSION': None,
+    'ALLOWED_VERSIONS': None,
+    'VERSION_PARAM': 'version'
+}

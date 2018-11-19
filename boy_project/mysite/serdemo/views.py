@@ -4,6 +4,12 @@ from rest_framework.response import Response
 from serdemo import serializers
 from rest_framework.viewsets import ViewSetMixin
 
+from rest_framework import views  # APIView
+from rest_framework import viewsets
+from rest_framework import generics
+from rest_framework import mixins
+from .pagination import MyPaginator, MyCursorPagination, MyLimitOffset
+
 
 # queryset不同  序列化器不同
 # def get:pass
@@ -37,14 +43,14 @@ class CreateModelMixin(object):
         return Response(ser_obj.errors)
 
 
-class RetrieveeModelMixin(object):
+class RetrieveModelMixin(object):
     def retrieve(self, request, id):
         book_obj = self.get_queryset().filter(id=id).first()
         ser_obj = serializers.BookSerializer(book_obj)
         return Response(ser_obj.data)
 
 
-class UpdateModeMixin(object):
+class UpdateModelMixin(object):
     def update(self, request, id):
         book_obj = self.get_queryset().filter(id=id).first()
         ser_obj = self.get_serializer(instance=book_obj, data=request.data, partial=True)
@@ -63,31 +69,85 @@ class DestroyModelMixin(object):
         return Response("")
 
 
+class ListCreateAPIView(GenericAPIView, ListModelMixin, CreateModelMixin):
+    pass
+
+
+class RetrieveUpdateDestroyAPIView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin):
+    pass
+
+
+class ModelViewSet(ViewSetMixin, ListModelMixin, RetrieveUpdateDestroyAPIView):
+    pass
+
+
 # get post
-class BookView(GenericAPIView, ListModelMixin, CreateModelMixin):
-    queryset = models.Book.objects.all()
-    serializer_class = serializers.BookSerializer
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
+# 封装一
+# class BookView(GenericAPIView, ListModelMixin, CreateModelMixin):
+#     queryset = models.Book.objects.all()
+#     serializer_class = serializers.BookSerializer
+#
+#     def get(self, request):
+#         return self.list(request)
+#
+#     def post(self, request):
+#         return self.create(request)
 
 
 # get put delete
-class BookEditView(GenericAPIView, RetrieveeModelMixin, UpdateModeMixin, DestroyModelMixin):
+# 封装一
+# class BookEditView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin):
+#     queryset = models.Book.objects.all()
+#     serializer_class = serializers.BookSerializer
+#
+#     def get(self, request, id):
+#         return self.retrieve(request, id)
+#
+#     def put(self, request, id):
+#         return self.update(request, id)
+#
+#     def delete(self, request, id):
+#         return self.destroy(request, id)
+
+
+# # 分装二
+# class BookView(ListCreateAPIView):
+#     queryset = models.Book.objects.all()
+#     serializer_class = serializers.BookSerializer
+#
+#     def get(self, request):
+#         return self.list(request)
+#
+#     def post(self, request):
+#         return self.create(request)
+#
+#
+# # 封装二
+# class BookEditView(RetrieveUpdateDestroyAPIView):
+#     queryset = models.Book.objects.all()
+#     serializer_class = serializers.BookSerializer
+#
+#     def get(self, request, id):
+#         return self.retrieve(request, id)
+#
+#     def put(self, request, id):
+#         return self.update(request, id)
+#
+#     def delete(self, request, id):
+#         return self.destroy(request, id)
+
+
+# 分装三  BookModelView
+class BookModelView(viewsets.ModelViewSet):  # 只需要在路由中指定字典就可以
     queryset = models.Book.objects.all()
     serializer_class = serializers.BookSerializer
+    # 分页一
+    pagination_class = MyPaginator
+    # 分页二
+    # pagination_class = MyLimitOffset
+    # 分页三
+    # pagination_class = MyCursorPagination
 
-    def get(self, request, id):
-        return self.retrieve(request, id)
-
-    def put(self, request, id):
-        return self.update(request, id)
-
-    def delete(self, request, id):
-        return self.destroy(request, id)
 
 # class BookView(APIView):
 #
@@ -129,3 +189,20 @@ class BookEditView(GenericAPIView, RetrieveeModelMixin, UpdateModeMixin, Destroy
 #             return Response('删除对象不存在')
 #         book_obj.delete()
 #         return Response("")
+
+
+
+
+class PageBookView(APIView):
+    def get(self, request):
+        queryset = models.Book.objects.all()
+        # 先实例化分页器对象
+        # page_obj = MyPaginator()
+        # page_obj = MyLimitOffset()
+        page_obj = MyCursorPagination()
+        # 用自己的分页器调用分页方法进行分页
+        page_data = page_obj.paginate_queryset(queryset, request)
+        # 序列化分页好的数据
+        ser_obj = serializers.BookSerializer(page_data, many=True)
+        # 给响应添加上一页下一页的链接
+        return page_obj.get_paginated_response(ser_obj.data)
