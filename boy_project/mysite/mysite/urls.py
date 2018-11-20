@@ -24,4 +24,6 @@ urlpatterns = [
     url(r'^demo/', include("demo.urls")),
 
     url(r'^api/', include("serdemo.urls")),
+
+    url(r'^tt/', include("serdemo.urls")),
 ]

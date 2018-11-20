@@ -36,7 +36,7 @@ class TestView(APIView):
 class TestPermission(APIView):
     authentication_classes = [MyAuth, ]
     permission_classes = [MyPermission, ]
-    throttle_classes = [DRDThrottle, ]
+    throttle_classes = [MyThrottle, ]
 
     def get(self, request):
         return Response('VIP能看的视频')

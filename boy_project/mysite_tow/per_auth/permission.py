@@ -28,6 +28,7 @@ class MyPermission(BasePermission):
         # 权限逻辑
         # 认证已经执行完了
         user_obj = request.user
+
         print(user_obj)
         try:
             if user_obj.type == 1:

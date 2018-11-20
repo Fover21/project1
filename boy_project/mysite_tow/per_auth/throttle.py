@@ -24,11 +24,19 @@ class MyThrottle(object):
             VISIT_RECORD[ip] = [time.time(), ]
         else:
             history = VISIT_RECORD[ip]
+            print('history', history)
             self.history = history
             history.insert(0, time.time())
             # 确保列表的时间是允许范围内的
-            while self.history[0] - self.history[-1] > 60:
-                self.history.pop()
+            try:
+                while self.history[0] - self.history[-1] > 10:
+
+                        print('self.history', self.history)
+                        history.clear()
+            except IndexError as e:
+                print(e)
+                return True
+
             # 判断列表的长度
             if not len(self.history) <= 5:
                 return False
@@ -37,7 +45,7 @@ class MyThrottle(object):
     # 等待信息
     # [最近时间，   最老时间]
     def wait(self):
-        return 60 - (self.history[0] - self.history[-1])
+        return 10 - (self.history[0] - self.history[-1])
 
 
 class DRDThrottle(SimpleRateThrottle):

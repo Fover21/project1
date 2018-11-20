@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+
+
+<button id="btn">点击</button>
+
+
+<script>
+    $("#btn").click(function () {
+        $.ajax({
+            url: "http://127.0.0.1:8000/cors/cors_demo/",
+            type: 'get',
+            // type: 'post'
+            // type: 'put'
+            success: function (data) {
+                console.log(data)
+            }
+        })
+    });
+
+
+    function handlerResponse(data) {
+        alert(data)
+    }
+     window.onload = function () {
+        $("#btn").click(function () {
+            let script_ele = document.createElement("script");
+            script_ele.src = "http://127.0.0.1:8000/cors/cors_demo/?callback=handlerResponse";
+            document.body.insertBefore(script_ele, document.body.firstChild);
+        })
+    }
+
+</script>
+<!--<script src="http://127.0.0.1:8000/cors/cors_demo/"></script>-->
+
+
+
+</body>
+</html>

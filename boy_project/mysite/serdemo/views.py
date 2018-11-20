@@ -191,8 +191,6 @@ class BookModelView(viewsets.ModelViewSet):  # 只需要在路由中指定字典
 #         return Response("")
 
 
-
-
 class PageBookView(APIView):
     def get(self, request):
         queryset = models.Book.objects.all()
@@ -206,3 +204,5 @@ class PageBookView(APIView):
         ser_obj = serializers.BookSerializer(page_data, many=True)
         # 给响应添加上一页下一页的链接
         return page_obj.get_paginated_response(ser_obj.data)
+
+
