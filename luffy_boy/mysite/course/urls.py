@@ -14,10 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from .views import CourseCategoryView, CourseView
+from .views import CourseCategoryView, CourseView, CourseDetailView, CourseChapterView
 
 urlpatterns = [
+    # 课程分类接口    http://127.0.0.1:8000/api/course/category
     url(r'^category$', CourseCategoryView.as_view()),
+    # 课程接口  http://127.0.0.1:8000/api/course/   http://127.0.0.1:8000/api/course/?catagory_id=x
     url(r'^$', CourseView.as_view()),
+    # 课程详情接口    http://127.0.0.1:8000/api/course/detail/x
+    url(r'^detail/(?P<id>\d+)', CourseDetailView.as_view()),
+    # 课程章节接口
+    url(r'^course_chapter', CourseChapterView.as_view()),
+
+
 
 ]

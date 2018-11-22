@@ -226,7 +226,10 @@ class Comment(models.Model):
 
 
 class Account(models.Model):
-    username = models.CharField(max_length=32, verbose_name="用户姓名")
+    username = models.CharField(max_length=32, verbose_name="用户姓名", unique=True)
+    pwd = models.CharField(max_length=128, verbose_name='密码')
+    token = models.UUIDField(null=True, blank=True)
+    create_token_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.username

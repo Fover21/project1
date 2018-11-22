@@ -21,6 +21,7 @@ from django.views.static import serve
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/course/', include('course.urls')),
+    url(r'^api/', include('login.urls')),
 
     # media路径配置
     url(r'media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
