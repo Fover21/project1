@@ -91,8 +91,9 @@ class CourseChapterSerializer(serializers.ModelSerializer):
         return obj.course.title
 
     def get_section_title(self, obj):
-        return [{'id': item.id, 'section_title': item.title} for item in obj.course_sections.all()]
+        return [{'id': item.id, 'section_title': item.title} for item in
+                obj.course_sections.all().order_by('section_order')]
 
     class Meta:
         model = models.CourseChapter
-        fields = '__all__'
+        exclude = ['chapter']

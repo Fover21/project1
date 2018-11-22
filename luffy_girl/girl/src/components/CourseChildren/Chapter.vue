@@ -13,14 +13,15 @@
       name: "Chapter",
       data() {
         return {
-          course_chapter: {}
+          course_chapter: {},
         }
       },
       mounted() {
         // 发送请求获取课程详细的所有数据
         let that = this;
+        let course_id = this.$route.params.id;
         that.$axios.request({
-          url: 'http://127.0.0.1:8000/api/course/course_chapter',
+          url: 'http://127.0.0.1:8000/api/course/course_chapter/' + course_id,
           type: 'get',
         }).then(function (data) {
             that.course_chapter = data.data;

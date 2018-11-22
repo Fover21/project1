@@ -13,17 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
-from django.contrib import admin
-from mysite import settings
-from django.views.static import serve
+from django.conf.urls import url
+from .views import ShoppingCarView
+
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^api/course/', include('course.urls')),
-    url(r'^api/', include('login.urls')),
-    url(r'^api/pay/', include('pay.urls')),
-
-    # media路径配置
-    url(r'media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
+    url(r'^shopping_car', ShoppingCarView.as_view()),
 ]

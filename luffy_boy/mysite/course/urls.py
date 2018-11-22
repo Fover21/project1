@@ -24,7 +24,7 @@ urlpatterns = [
     # 课程详情接口    http://127.0.0.1:8000/api/course/detail/x
     url(r'^detail/(?P<id>\d+)', CourseDetailView.as_view()),
     # 课程章节接口
-    url(r'^course_chapter', CourseChapterView.as_view()),
+    url(r'^course_chapter/(?P<id>\d+)', CourseChapterView.as_view()),
 
 
 

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'course.apps.CourseConfig',
     'rest_framework',
     'login.apps.LoginConfig',
+    'pay'
 ]
 
 MIDDLEWARE = [

@@ -11,9 +11,10 @@
       </div>
       <div>
       <h1>可以根据不同的学习情况购买不一样的学习套餐哦！</h1>
-      <p v-for="(price, index) in course_detail.price_policy" :key="index">{{price.valid_period}} 贝利
+      <p v-for="(price, index) in course_detail.price_policy" :key="index" @click="choicePrice(price.id)">{{price.valid_period}} 贝利
         {{price.price}}</p>
-
+      <button>购买</button>
+      <button @click="addShoppingCar">加入购物车</button>
     </div>
 
 
@@ -70,7 +71,16 @@
     name: "Brief",
     data() {
       return {
-        course_detail: {}
+        course_detail: {},
+        currentPrice: '',
+      }
+    },
+    methods: {
+      choicePrice: function (price_id) {
+        this.currentPrice = price_id;
+      },
+      addShoppingCar: function () {
+        // 加入购物车的请求在这里发
       }
     },
     mounted() {

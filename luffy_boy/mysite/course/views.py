@@ -56,8 +56,8 @@ class CourseChapterView(APIView):
     """
     课程章节
     """
-    def get(self, request):
+    def get(self, request, id):
         # 获取所有章节对象
-        course_chapter_obj = models.CourseChapter.objects.all()
+        course_chapter_obj = models.CourseChapter.objects.filter(course_id=id).order_by('chapter')
         ser_obj = serializers.CourseChapterSerializer(course_chapter_obj, many=True)
         return Response(ser_obj.data)
