@@ -9,6 +9,8 @@ class BaseResponse(object):
         # 成功的数据
         self.data = ''
 
+    # 将信息属性值信息封装为属性
     @property
     def dict(self):
+        # 将该类中属性值以字典形式返回
         return self.__dict__

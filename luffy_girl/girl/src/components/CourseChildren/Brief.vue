@@ -13,8 +13,10 @@
       <h1>可以根据不同的学习情况购买不一样的学习套餐哦！</h1>
       <p v-for="(price, index) in course_detail.price_policy" :key="index" @click="choicePrice(price.id)">{{price.valid_period}} 贝利
         {{price.price}}</p>
+        {{currentPrice}}
       <button>购买</button>
       <button @click="addShoppingCar">加入购物车</button>
+        {{succes_img}}
     </div>
 
 
@@ -73,6 +75,7 @@
       return {
         course_detail: {},
         currentPrice: '',
+        succes_img: '',
       }
     },
     methods: {
@@ -80,7 +83,26 @@
         this.currentPrice = price_id;
       },
       addShoppingCar: function () {
+        let course_id = this.$route.params.id;
+        let price_policy_id = this.currentPrice;
+        let that = this;
         // 加入购物车的请求在这里发
+        this.$axios.request({
+          url: 'http://127.0.0.1:8000/api/pay/shopping_car/',
+          method: 'post',
+          headers: {
+            AUTHENTICATE: 'f79bfa9706104bde84356188f9ed20c3',
+          },
+          data: {
+            course_id: course_id,
+            price_policy_id: price_policy_id,
+          }
+        }).then(function (data) {
+          if(data.status==200){
+              that.succes_img = '加入到购物车成功';
+              console.log('加入到购物车')
+          }
+        })
       }
     },
     mounted() {
