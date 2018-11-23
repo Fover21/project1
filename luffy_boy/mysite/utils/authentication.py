@@ -33,4 +33,4 @@ class MyAuth(BaseAuthentication):
                 "code": 1022,
                 "error": 'token过期重新登录'
             })
-        return (user_obj, token)
+        return user_obj, token

@@ -8,8 +8,11 @@ from course import models
 import json  # 存入redis缓存的时候二层以后的字典为字符串，通过json来处理
 
 # Create your views here.
+# 往redis中存的数据键值，也就是购物车中有哪些内容的键
+# 构建方式为，以用户的id和课程id的拼接 -> 这是为什么呢？ 是为了在查找这个用户买了哪些课程，可以匹配课程(redis可以模糊匹配键)
 SHOPPING_CAR_KEY = 'shopping_car_%s_%s'
-REDIS_CONN = redis.Redis(connection_pool=redis_poll.POOL, )
+# 接入数据池
+REDIS_CONN = redis.Redis(connection_pool=redis_poll.POOL)
 # 数据结构
 # shopping_car_ %s_ %s: {
 #     id: 1,
@@ -27,7 +30,9 @@ REDIS_CONN = redis.Redis(connection_pool=redis_poll.POOL, )
 class ShoppingCarView(APIView):
     """
     1030: 加入到购物车失败
+    1031：课程不存在
     """
+    # 认证，如果要加入购物车，需要先认证，用户是否已经登录！认证通过才可以继续购买，否则需要先登录
     authentication_classes = [MyAuth, ]
 
     # 加入购入车
@@ -95,7 +100,7 @@ class ShoppingCarView(APIView):
             # 3去redis读取该用户的所有加入购物车的内容
             # 3.1先去模糊匹配出所有匹配的key
             all_keys = REDIS_CONN.scan_iter(shopping_car_key)
-            # print([i for i in all_keys])
+            # print([i for i in all_keys])  # 迭代器的惰性机制，只能从头读到尾，而且只能读一次
             # 3.2循环所有的keys 得到每个key
             shopping_car_list = []
             for key in all_keys:

@@ -34,12 +34,15 @@ class LoginView(APIView):
         if not pwd:
             ret.code = 1011
             ret.error = '密码不能为空'
+            return Response(ret.dict)
         # 判断是否有这个用户对象
         try:
+            # 从数据库拿出账户密码进行对比
             user_obj = Account.objects.filter(username=username, pwd=pwd).first()
             if not user_obj:
                 ret.code = 1012
                 ret.error = '用户名或密码错误'
+                return Response(ret.dict)
             # 生成token
             user_obj.token = uuid.uuid4()
             user_obj.save()
