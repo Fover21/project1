@@ -77,9 +77,11 @@ class ShoppingCarView(APIView):
                 'price_policy_dict': json.dumps(price_policy_dict, ensure_ascii=False),
                 'default_policy_id': price_policy_id,
             }
+            print(course_info)
             # 4、写入redis
             # 4.1、拼接购物车的key
             shopping_car_key = SHOPPING_CAR_KEY % (user_id, course_id)
+            print(shopping_car_key)
             # 4.2、写入redis
             REDIS_CONN.hmset(shopping_car_key, course_info)
             res.data = '加入购物车成功'
