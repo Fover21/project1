@@ -231,6 +231,7 @@ class Account(models.Model):
     pwd = models.CharField(max_length=128, verbose_name='密码')
     token = models.UUIDField(null=True, blank=True)
     create_token_time = models.DateTimeField(auto_now=True)
+    beili = models.IntegerField(default=1000)
 
     def __str__(self):
         return self.username

@@ -9,6 +9,7 @@ from course import models
 import json  # 存入redis缓存的时候二层以后的字典为字符串，通过json来处理
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
+from utils.pay import AliPay
 
 # Create your views here.
 # 往redis中存的数据键值，也就是购物车中有哪些内容的键
@@ -310,6 +311,31 @@ class PaymentView(APIView):
     authentication_classes = [MyAuth, ]
 
     def post(self, request):
+        '''
+        {
+
+        "courses_info":[
+                     {
+                      course_id:1,
+                      price_policy_id:1,
+                      coupon_record_id:2
+                     },
+                      {
+                      course_id:2,
+                      price_policy_id:5,
+                      coupon_record_id:3
+                     }
+                     ]
+
+        global_coupon_id:1,
+        beli:1000，
+        "pay_money":268,
+
+        }
+
+        :param request:
+        :return:
+        '''
         # 1 获取数据
         user = request.user
         courses_info = request.data.get('courses_info')
@@ -342,6 +368,7 @@ class PaymentView(APIView):
                     coupon__object_id=course_id,
                     coupon__content_type=10,
                 ).first()
+
                 if not coupon_record:
                     raise CommonException('课程优惠卷不合法', 1052)
                 # 3.4 计算课程优惠卷的惠后价格
@@ -369,13 +396,31 @@ class PaymentView(APIView):
                 raise CommonException('贝利不足', 1054)
             # 5.2 计算贝利后的价格
             final_price = global_coupon_price - beili / 10
+            print(final_price)
             if final_price < 0:
                 final_price = 0
             # 6 比较前端传来的结果(pay_money)和我算出的价格是否一致
             if final_price != pay_money:
                 raise CommonException('实际支付价格与参数价格不一致', 1055)
             # 7 订单信息
-            res.data = ''
+            # Order记录
+            # OrderDetail
+            # OrderDetail
+            # OrderDetail
+
+            # 8 构建支付宝二维码页面
+            import time
+            alipay = self.get_alipay()
+            # 生成支付的url
+            query_params = alipay.direct_pay(
+                subject="Django课程",  # 商品简单描述
+                out_trade_no="x2" + str(time.time()),  # 商户订单号
+                total_amount=pay_money,  # 交易金额(单位: 元 保留俩位小数)
+            )
+
+            pay_url = "https://openapi.alipaydev.com/gateway.do?{}".format(query_params)
+            res.data = '订单创建成功'
+            res.url = pay_url
 
         except ObjectDoesNotExist as e:
             print(e)
@@ -392,20 +437,43 @@ class PaymentView(APIView):
         return Response(res.dict)
 
     def cal_coupon_price(self, price, coupon_record):
-        content_type = coupon_record.coupon.content_type
+
+        coupon_type = coupon_record.coupon.coupon_type
         money_equivalent_value = coupon_record.coupon.money_equivalent_value
         off_percent = coupon_record.coupon.off_percent
         minimum_consume = coupon_record.coupon.minimum_consume
-
         rebate_price = 0
-        if content_type == 0:
+        if coupon_type == 0:  # 立减卷
             rebate_price = price - money_equivalent_value
             if rebate_price < 0:
                 rebate_price = 0
-            elif content_type == 1:  # 满减卷
-                if price < minimum_consume:  # 不满足最低消费
-                    raise CommonException('不满足最低消费', 1060)
-                rebate_price = price - money_equivalent_value
-            else:  # 折扣
-                rebate_price = price * off_percent / 100
+        elif coupon_type == 1:  # 满减卷
+            if price < minimum_consume:  # 不满足最低消费
+                raise CommonException('不满足最低消费', 1060)
+            rebate_price = price - money_equivalent_value
+        else:  # 折扣
+            rebate_price = price * off_percent / 100
+            print(rebate_price)
         return rebate_price
+
+    def get_alipay(self):
+        # 沙箱环境地址：https://openhome.alipay.com/platform/appDaily.htm?tab=info
+        app_id = "2016091100486897"
+        # POST请求，用于最后的检测
+        notify_url = "http://47.94.172.250:8804/page2/"
+        # notify_url = "http://www.wupeiqi.com:8804/page2/"
+        # GET请求，用于页面的跳转展示
+        return_url = "http://47.94.172.250:8804/page2/"
+        # return_url = "http://www.wupeiqi.com:8804/page2/"
+        merchant_private_key_path = "utils/keys/app_private_2048.txt"
+        alipay_public_key_path = "utils/keys/alipay_public_2048.txt"
+
+        alipay = AliPay(
+            appid=app_id,
+            app_notify_url=notify_url,
+            return_url=return_url,
+            app_private_key_path=merchant_private_key_path,
+            alipay_public_key_path=alipay_public_key_path,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥
+            debug=True,  # 默认False,
+        )
+        return alipay
