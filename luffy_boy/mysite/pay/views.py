@@ -2,17 +2,23 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.authentication import MyAuth  # 认证类
 from utils import redis_poll  # 实现写好的一个redis连接池
+from utils.exceptions import CommonException
 import redis
 from utils.base_response import BaseResponse  # 配置的错误信息类
 from course import models
 import json  # 存入redis缓存的时候二层以后的字典为字符串，通过json来处理
+import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 # 往redis中存的数据键值，也就是购物车中有哪些内容的键
 # 构建方式为，以用户的id和课程id的拼接 -> 这是为什么呢？ 是为了在查找这个用户买了哪些课程，可以匹配课程(redis可以模糊匹配键)
 SHOPPING_CAR_KEY = 'shopping_car_%s_%s'
+ACCOUNT_KEY = 'account_%s_%s'
 # 接入数据池
 REDIS_CONN = redis.Redis(connection_pool=redis_poll.POOL)
+
+
 # 数据结构
 # shopping_car_ %s_ %s: {
 #     id: 1,
@@ -25,6 +31,27 @@ REDIS_CONN = redis.Redis(connection_pool=redis_poll.POOL)
 #     default_price_policy_id: 3
 #
 # }
+# account_ % s_ % s: {
+#     "course_info": {
+#         id: 1,
+#         title: CMDB,
+#         course_img: xxxxx,
+#         price_policy_dict: {
+#             1: {有效期1个月， 99}
+#
+# }，
+# default_price_policy_id: 3
+#
+# },
+#
+# "coupons": {
+#     1：{}，
+# 3：{}，
+# }
+# }
+#
+#
+# global_coupon_1: {}
 
 
 class ShoppingCarView(APIView):
@@ -97,6 +124,7 @@ class ShoppingCarView(APIView):
         try:
             # 1获取user_id
             user_id = request.user.id
+            # print(user_id)
             # 2拼接用户的购物车的key    key支持模糊匹配
             shopping_car_key = SHOPPING_CAR_KEY % (user_id, '*')
             # 3去redis读取该用户的所有加入购物车的内容
@@ -172,3 +200,212 @@ class ShoppingCarView(APIView):
             res.code = 1037
             res.error = '删除失败'
         return Response(res.dict)
+
+
+class AccountView(APIView):
+    """
+    加入购物车结算接口
+    """
+    authentication_classes = [MyAuth, ]
+
+    def post(self, request, *args, **kwargs):
+        res = BaseResponse()
+        # 1 获取数据
+        user = request.user
+        course_id_list = request.data.get('course_id_list')
+        try:
+            # 清空操作
+            # 找到所有的account_user_id_*,全部清空
+            # del_list = REDIS_CONN.keys(ACCOUNT_KEY % (user.pk, "*"))
+            # REDIS_CONN.delete(*del_list)
+            # 2 循环课程列表为每个课程建立数据结构
+            for course_id in course_id_list:
+                account_key = ACCOUNT_KEY % (user.pk, course_id)
+                account_dict = {}
+                shopping_car_key = SHOPPING_CAR_KEY % (user.pk, course_id)
+                # 判断课程是否存在购物车中
+                if not REDIS_CONN.exists(shopping_car_key):
+                    raise CommonException('购物车中该课程不存在', 1040)
+                # 将课程信息加入到结算字典中
+                course_info = REDIS_CONN.hgetall(shopping_car_key)
+                account_dict['course_info'] = course_info
+
+                # 将课程优惠卷加入到每一个课程结算字典中
+                # 查询与当前用户拥有没使用的，在有效期且与课程相关的优惠卷
+                account_dict['course_coupons'] = self.get_coupon_dict(request, course_id)
+
+                # 存储结算信息
+                REDIS_CONN.set(account_key, json.dumps(account_dict))
+                # 存储通用优惠卷，加入到redis中
+                REDIS_CONN.set('global_coupon_%s' % user.pk, json.dumps(self.get_coupon_dict(request)))
+                res.code = 1044
+                res.data = '成功'
+                # print(json.loads(REDIS_CONN.get(account_key)))
+        except CommonException as e:
+            res.code = e.code
+            res.error = e.msg
+        except Exception as e:
+            res.code = 500
+            res.error = str(e)
+        return Response(res.dict)
+
+    def get_coupon_dict(self, request, course_id=None):
+        now = datetime.datetime.utcnow()
+
+        coupon_record_list = models.CouponRecord.objects.filter(
+            user=request.user,
+            status=0,  # 此优惠卷是否被使用
+            coupon__valid_begin_date__lte=now,  # 有效期开始时间
+            coupon__valid_end_date__gt=now,  # 有效期结束时间
+            coupon__object_id=course_id,
+            coupon__content_type=10,
+        )
+
+        coupon_dict = {}
+        for coupon_record in coupon_record_list:
+            coupon_dict[coupon_record.pk] = {
+                "name": coupon_record.coupon.name,
+                "coupon_type": coupon_record.coupon.get_coupon_type_display(),
+                "money_equivalent_value": coupon_record.coupon.money_equivalent_value,
+                "off_percent": coupon_record.coupon.off_percent,
+                "minimum_consume": coupon_record.coupon.minimum_consume,
+                "valid_begin_date": coupon_record.coupon.valid_begin_date.strftime("%Y-%m-%d"),
+                "valid_end_date": coupon_record.coupon.valid_end_date.strftime("%Y-%m-%d"),
+            }
+        # print('coupon_dict', coupon_dict)
+        return coupon_dict
+
+    def get(self, request, *args, **kwargs):
+        res = BaseResponse()
+        try:
+            # 1获取user_id
+            user_id = request.user.id
+            print('user', user_id)
+            # 2拼接用户要结算的购物车的key    key支持模糊匹配
+            account_key = ACCOUNT_KEY % (user_id, '*')
+            # 3去redis读取该用户的所有加入购物车的内容
+            # 3.1先去模糊匹配出所有匹配的key
+            all_keys = REDIS_CONN.keys(account_key)
+            # 3.2循环所有的keys 得到每个key
+            account_list = {}
+            for key in all_keys:
+                course_info = REDIS_CONN.get(key)
+                account_list['course_info'] = json.loads(course_info)
+                account_list['course_info']['course_info']['price_policy_dict'] = json.loads(
+                    account_list['course_info']['course_info']['price_policy_dict'])
+            account_list['global_coupon_%s' % user_id] = json.loads(REDIS_CONN.get('global_coupon_%s' % user_id))
+            # 返回
+            res.data = account_list
+        except Exception as e:
+            print(e)
+            res.code = 1033
+            res.error = '获取购物车失败'
+        return Response(res.dict)
+
+
+class PaymentView(APIView):
+    """
+    支付接口
+    """
+    authentication_classes = [MyAuth, ]
+
+    def post(self, request):
+        # 1 获取数据
+        user = request.user
+        courses_info = request.data.get('courses_info')
+        global_coupon_id = request.data.get('global_coupon_id')
+        beili = request.data.get('beili')
+        pay_money = request.data.get('pay_money')
+        res = BaseResponse()
+        now = datetime.datetime.utcnow()
+        # 2 循环课程信息
+        try:
+            course_price_list = []
+            for course_info in courses_info:
+                course_id = course_info.get('course_id')
+                price_policy_id = course_info.get('price_policy_id')
+                coupon_record_id = course_info.get('coupon_record_id')
+                # 3 校验数据
+                # 3.1 课程是否存在
+                course_obj = models.Course.objects.get(pk=course_id)
+
+                # 3.2 价格策略是否合法
+                if price_policy_id not in [obj.pk for obj in course_obj.price_policy.all()]:
+                    raise CommonException('价格策略不存在', 1050)
+                # 3.3 课程优惠卷是否合法
+                coupon_record = models.CouponRecord.objects.filter(
+                    pk=coupon_record_id,
+                    user=request.user,
+                    status=0,  # 此优惠卷是否被使用
+                    coupon__valid_begin_date__lte=now,  # 有效期开始时间
+                    coupon__valid_end_date__gt=now,  # 有效期结束时间
+                    coupon__object_id=course_id,
+                    coupon__content_type=10,
+                ).first()
+                if not coupon_record:
+                    raise CommonException('课程优惠卷不合法', 1052)
+                # 3.4 计算课程优惠卷的惠后价格
+                course_price = models.PricePolicy.objects.get(pk=price_policy_id).price
+                coupon_price = self.cal_coupon_price(course_price, coupon_record)
+                course_price_list.append(coupon_price)
+            # 4 通用优惠卷处理
+            # 4.1 校验通用优惠卷是否合法
+            global_coupon_record = models.CouponRecord.objects.filter(
+                pk=global_coupon_id,
+                user=request.user,
+                status=0,  # 此优惠卷是否被使用
+                coupon__valid_begin_date__lte=now,  # 有效期开始时间
+                coupon__valid_end_date__gt=now,  # 有效期结束时间
+                coupon__object_id=None,
+                coupon__content_type=10,
+            ).first()
+            if not global_coupon_record:
+                raise CommonException('通用优惠卷不合法', 1053)
+            # 4.2 计算通用优惠卷优惠后的价格
+            global_coupon_price = self.cal_coupon_price(sum(course_price_list), global_coupon_record)
+            # 5 处理贝利
+            # 5.1 校验贝利是否充足
+            if beili > request.user.beili:
+                raise CommonException('贝利不足', 1054)
+            # 5.2 计算贝利后的价格
+            final_price = global_coupon_price - beili / 10
+            if final_price < 0:
+                final_price = 0
+            # 6 比较前端传来的结果(pay_money)和我算出的价格是否一致
+            if final_price != pay_money:
+                raise CommonException('实际支付价格与参数价格不一致', 1055)
+            # 7 订单信息
+            res.data = ''
+
+        except ObjectDoesNotExist as e:
+            print(e)
+            res.code = 1050
+            res.error = '课程不存在'
+
+        except CommonException as e:
+            res.code = e.code
+            res.error = e.msg
+
+        except Exception as e:
+            res.code = 500
+            res.error = str(e)
+        return Response(res.dict)
+
+    def cal_coupon_price(self, price, coupon_record):
+        content_type = coupon_record.coupon.content_type
+        money_equivalent_value = coupon_record.coupon.money_equivalent_value
+        off_percent = coupon_record.coupon.off_percent
+        minimum_consume = coupon_record.coupon.minimum_consume
+
+        rebate_price = 0
+        if content_type == 0:
+            rebate_price = price - money_equivalent_value
+            if rebate_price < 0:
+                rebate_price = 0
+            elif content_type == 1:  # 满减卷
+                if price < minimum_consume:  # 不满足最低消费
+                    raise CommonException('不满足最低消费', 1060)
+                rebate_price = price - money_equivalent_value
+            else:  # 折扣
+                rebate_price = price * off_percent / 100
+        return rebate_price

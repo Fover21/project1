@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <table border="1">
+        <thead>
+        <tr>
+            <th>学科</th>
+            <th>成绩</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td v-for="name in s">{{ name.name }}</td>
+            <td v-for="name in s">{{ name.num }}</td>
+            <!--<td v-for="name in data"><input type="text" v-model.number.lazy={{name}}></td>-->
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            s: [{name: "python", num: 100},
+                {name: "go", num: 95},
+                {name: "linux", num: 75}]
+
+        },
+    });
+</script>
+</body>
+<[表情]ml>

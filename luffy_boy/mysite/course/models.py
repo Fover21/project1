@@ -4,7 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 
 # Create your models here.
 __all__ = ["Category", "Course", "CourseDetail", "Teacher", "DegreeCourse", "CourseChapter",
-           "CourseSection", "PricePolicy", "OftenAskedQuestion", "Comment", "Account", "CourseOutline"]
+           "CourseSection", "PricePolicy", "OftenAskedQuestion", "Comment", "Account", "CourseOutline",
+           "CouponRecord", "Coupon"]
 
 
 class Category(models.Model):
@@ -257,3 +258,52 @@ class CourseOutline(models.Model):
         db_table = verbose_name
         verbose_name_plural = verbose_name
         unique_together = ('course_detail', 'title')
+
+
+#################################################################
+# 优惠卷规则及优惠卷表
+class Coupon(models.Model):
+    """优惠券生成规则"""
+    name = models.CharField(max_length=64, verbose_name="活动名称")
+    brief = models.TextField(blank=True, null=True, verbose_name="优惠券介绍")
+    coupon_type_choices = ((0, '立减券'), (1, '满减券'), (2, '折扣券'))
+    coupon_type = models.SmallIntegerField(choices=coupon_type_choices, default=0, verbose_name="券类型")
+
+    money_equivalent_value = models.IntegerField(verbose_name="等值货币", blank=True, null=True)
+    off_percent = models.PositiveSmallIntegerField("折扣百分比", help_text="只针对折扣券，例7.9折，写79", blank=True, null=True)
+    minimum_consume = models.PositiveIntegerField("最低消费", default=0, help_text="仅在满减券时填写此字段")
+
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField("绑定课程", blank=True, null=True, help_text="可以把优惠券跟课程绑定")
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    quantity = models.PositiveIntegerField("数量(张)", default=1)
+    open_date = models.DateField("优惠券领取开始时间")
+    close_date = models.DateField("优惠券领取结束时间")
+    valid_begin_date = models.DateTimeField(verbose_name="有效期开始时间", blank=True, null=True)
+    valid_end_date = models.DateTimeField(verbose_name="有效结束时间", blank=True, null=True)
+    coupon_valid_days = models.PositiveIntegerField(verbose_name="优惠券有效期（天）", blank=True, null=True,
+                                                    help_text="自券被领时开始算起")
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "13-优惠券生成规则"
+
+    def __str__(self):
+        return "%s(%s)" % (self.get_coupon_type_display(), self.name)
+
+
+class CouponRecord(models.Model):
+    """优惠券发放、消费纪录"""
+    coupon = models.ForeignKey("Coupon", on_delete=models.CASCADE)
+    user = models.ForeignKey("Account", verbose_name="拥有者", on_delete=models.CASCADE)
+    status_choices = ((0, '未使用'), (1, '已使用'), (2, '已过期'))
+    status = models.SmallIntegerField(choices=status_choices, default=0)
+    get_time = models.DateTimeField(verbose_name="领取时间", help_text="用户领取时间", null=True, blank=True)
+    used_time = models.DateTimeField(blank=True, null=True, verbose_name="使用时间")
+
+    class Meta:
+        verbose_name_plural = "14-优惠券发放、消费纪录"
+
+    def __str__(self):
+        return '%s-%s-%s' % (self.user, self.coupon, self.get_status_display())
