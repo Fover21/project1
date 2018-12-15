@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/Users/busensei/envs/flask/bin/python",
+    "files.autoSave": "afterDelay",
+    "python.formatting.provider": "autopep8",
+}
